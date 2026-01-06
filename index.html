@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>智能旅游行程规划</title>
+    <title>智能旅遊行程規劃</title>
     <style>
         * {
             box-sizing: border-box;
@@ -194,6 +194,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            cursor: pointer;
         }
         .social-item:hover {
             background: #e9ecef;
@@ -210,7 +211,7 @@
             display: flex;
             align-items: center;
         }
-        a {
+        .social-badge {
             color: #3498db;
             text-decoration: none;
             font-weight: 500;
@@ -219,11 +220,11 @@
             transition: all 0.2s;
             white-space: nowrap;
             display: inline-block;
+            background: #e3f2fd;
         }
-        a:hover {
+        .social-badge:hover {
             background: #3498db;
             color: white;
-            text-decoration: none;
         }
         .category-tag {
             display: inline-block;
@@ -252,6 +253,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            cursor: pointer;
         }
         .recommendation-item:hover {
             background: #e9ecef;
@@ -519,6 +521,14 @@
             color: white;
             border-color: #3498db;
         }
+        .app-badge {
+            font-size: 11px;
+            background: #4CAF50;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 5px;
+        }
         @media (min-width: 768px) {
             .container {
                 max-width: 768px;
@@ -601,7 +611,7 @@
             <div class="feature">
                 <div class="feature-icon">🗺️</div>
                 <h3 id="feature-routes">路线规划</h3>
-                <p id="feature-routes-desc">提供百度/高德地图路线</p>
+                <p id="feature-routes-desc">直接打开百度/高德地图App</p>
             </div>
             <div class="feature">
                 <div class="feature-icon">🏆</div>
@@ -611,7 +621,7 @@
             <div class="feature">
                 <div class="feature-icon">📱</div>
                 <h3 id="feature-social">社交热点</h3>
-                <p id="feature-social-desc">查看社交媒体上的热门内容</p>
+                <p id="feature-social-desc">直接打开社交平台App</p>
             </div>
         </div>
         
@@ -671,12 +681,35 @@
     </div>
 
     <script>
-        // 全局变量
+        // 全局變數
         let userPosition = null;
         let currentVersion = 'cn'; // 'cn' 或 'intl'
         let currentLanguage = 'zh-CN'; // 'zh-CN', 'zh-TW'
+        let appDetectionTimer = null;
         
-        // 语言文本配置
+        // 通用App打開函數
+        function openApp(appUrl, webUrl) {
+            // 清除之前的定時器
+            if (appDetectionTimer) {
+                clearTimeout(appDetectionTimer);
+            }
+            
+            // 記錄開始時間
+            const startTime = Date.now();
+            
+            // 嘗試打開App
+            window.location.href = appUrl;
+            
+            // 設置定時器檢查是否成功打開App
+            appDetectionTimer = setTimeout(function() {
+                // 如果頁面仍然活躍（App未打開），則打開網頁版
+                if (Date.now() - startTime < 2000) {
+                    window.open(webUrl, '_blank');
+                }
+            }, 1500);
+        }
+        
+        // 語言文本配置
         const languageTexts = {
             'zh-CN': {
                 // 中国版简体中文
@@ -688,11 +721,11 @@
                 featureLocation: '出发地选择',
                 featureLocationDesc: '可选择多个热门城市出发',
                 featureRoutes: '路线规划',
-                featureRoutesDesc: '提供百度/高德地图路线',
+                featureRoutesDesc: '直接打开百度/高德地图App',
                 featureRecommend: '热门推荐',
                 featureRecommendDesc: '推荐当地热门景点与活动',
                 featureSocial: '社交热点',
-                featureSocialDesc: '查看社交媒体上的热门内容',
+                featureSocialDesc: '直接打开社交平台App',
                 
                 // 位置选择
                 locationSelectTitle: '选择出发地',
@@ -736,8 +769,8 @@
                 toolsDesc: '为您的 {dest} 之旅提供便利：',
                 
                 // 地图说明
-                mapInstruction: '点击下方按钮在百度或高德地图App中查看详细路线',
-                mapAdditionalInstruction: '使用百度或高德地图规划路线，点击按钮将打开地图App并自动规划路线',
+                mapInstruction: '点击下方按钮直接打开百度或高德地图App',
+                mapAdditionalInstruction: '选择交通方式后，将直接打开地图App并自动规划路线',
                 
                 // 出行方式
                 modesDriving: '驾车',
@@ -750,11 +783,12 @@
                 foodSearchText: '美食推荐',
                 taxiText: '出行服务',
                 moreInfoText: '更多信息',
-                viewText: '查看',
+                viewText: '打开App',
+                openAppText: '打开App',
                 
                 // 小贴士
                 tipsTitle: '小贴士：',
-                tips1: '所有链接将在新标签页打开，方便您比较和规划。',
+                tips1: '点击按钮将直接打开相应的App（如果已安装），否则会打开网页版。',
                 tips2: '出发地：{start} (纬度: {lat}, 经度: {lng})',
                 tips3: '部分服务可能需要您安装相应的手机应用才能获得最佳体验。',
                 
@@ -776,11 +810,11 @@
                 featureLocation: '出發地選擇',
                 featureLocationDesc: '可選擇多個熱門城市出發',
                 featureRoutes: '路線規劃',
-                featureRoutesDesc: '提供Google地圖路線規劃',
+                featureRoutesDesc: '直接打開Google地圖App',
                 featureRecommend: '熱門推薦',
                 featureRecommendDesc: '推薦當地熱門景點與活動',
                 featureSocial: '社群熱點',
-                featureSocialDesc: '查看社交媒體上的熱門內容',
+                featureSocialDesc: '直接打開社交媒體App',
                 
                 // 位置選擇
                 locationSelectTitle: '選擇出發地',
@@ -824,8 +858,8 @@
                 toolsDesc: '為您的 {dest} 之旅提供便利：',
                 
                 // 地圖說明
-                mapInstruction: '點擊下方按鈕在Google地圖中查看詳細路線',
-                mapAdditionalInstruction: '使用Google地圖規劃路線，點擊按鈕將跳轉到Google地圖查看詳細路線',
+                mapInstruction: '點擊下方按鈕直接打開Google地圖App',
+                mapAdditionalInstruction: '選擇交通方式後，將直接打開地圖App並自動規劃路線',
                 
                 // 出行方式
                 modesDriving: '駕車',
@@ -838,11 +872,12 @@
                 foodSearchText: '美食推薦',
                 taxiText: '出行服務',
                 moreInfoText: '更多資訊',
-                viewText: '查看',
+                viewText: '打開App',
+                openAppText: '打開App',
                 
                 // 小貼士
                 tipsTitle: '小貼士：',
-                tips1: '所有連結將在新標籤頁打開，方便您比較和規劃。',
+                tips1: '點擊按鈕將直接打開相應的App（如果已安裝），否則會打開網頁版。',
                 tips2: '出發地：{start} (緯度: {lat}, 經度: {lng})',
                 tips3: '部分服務可能需要您安裝相應的手機應用才能獲得最佳體驗。',
                 
@@ -875,66 +910,124 @@
                     { name: "台北西门町", lat: 25.0424, lng: 121.5077 }
                 ],
                 
-                // 社交平台配置 - 中国热门平台
+                // 社交平台配置 - 中国热门平台（App直连）
                 socialPlatforms: [
                     { 
                         name: '抖音', 
                         icon: 'fab fa-tiktok', 
                         colorClass: 'douyin-color',
-                        url: (keyword) => `https://www.douyin.com/search/${encodeURIComponent(keyword)}?type=video`,
+                        appUrl: (keyword) => `snssdk1128://search?keyword=${encodeURIComponent(keyword)}`,
+                        webUrl: (keyword) => `https://www.douyin.com/search/${encodeURIComponent(keyword)}?type=video`,
                         description: '查看抖音上的热门短视频'
                     },
                     { 
                         name: '小红书', 
                         icon: 'fas fa-book', 
                         colorClass: 'xiaohongshu-color',
-                        url: (keyword) => `https://www.xiaohongshu.com/search_result?keyword=${encodeURIComponent(keyword)}`,
+                        appUrl: (keyword) => `xhsdiscover://search?keyword=${encodeURIComponent(keyword)}`,
+                        webUrl: (keyword) => `https://www.xiaohongshu.com/search_result?keyword=${encodeURIComponent(keyword)}`,
                         description: '浏览小红书游记与攻略'
                     },
                     { 
                         name: 'Bilibili', 
                         icon: 'fas fa-play-circle', 
                         colorClass: 'bilibili-color',
-                        url: (keyword) => `https://search.bilibili.com/all?keyword=${encodeURIComponent(keyword)}+旅游`,
+                        appUrl: (keyword) => `bilibili://search?keyword=${encodeURIComponent(keyword)}+旅游`,
+                        webUrl: (keyword) => `https://search.bilibili.com/all?keyword=${encodeURIComponent(keyword)}+旅游`,
                         description: '查看B站旅游相关视频'
                     },
                     { 
                         name: '微博', 
                         icon: 'fab fa-weibo', 
                         colorClass: 'weibo-color',
-                        url: (keyword) => `https://s.weibo.com/weibo/${encodeURIComponent(keyword)}`,
+                        appUrl: (keyword) => `sinaweibo://searchall?q=${encodeURIComponent(keyword)}`,
+                        webUrl: (keyword) => `https://s.weibo.com/weibo/${encodeURIComponent(keyword)}`,
                         description: '搜索微博相关话题'
                     },
                     { 
                         name: '知乎', 
                         icon: 'fab fa-zhihu', 
                         colorClass: 'zhihu-color',
-                        url: (keyword) => `https://www.zhihu.com/search?type=content&q=${encodeURIComponent(keyword)}`,
+                        appUrl: (keyword) => `zhihu://search?q=${encodeURIComponent(keyword)}`,
+                        webUrl: (keyword) => `https://www.zhihu.com/search?type=content&q=${encodeURIComponent(keyword)}`,
                         description: '查看知乎上的旅游问答'
                     }
                 ],
                 
                 // 地图配置 - 使用百度地图和高德地图App
                 mapConfig: {
-                    getRouteUrl: (origin, destination, mode) => {
-                        // 百度地图App URL Scheme
-                        const baiduUrl = `baidumap://map/direction?origin=${origin.lat},${origin.lng}&destination=${encodeURIComponent(destination)}&mode=${mode}&src=webapp`;
-                        
-                        // 高德地图App URL Scheme
-                        const gaodeUrl = `amapuri://route/plan/?slat=${origin.lat}&slon=${origin.lng}&sname=起点&dlat=&dlon=&dname=${encodeURIComponent(destination)}&dev=0&t=0`;
-                        
-                        return { baiduUrl, gaodeUrl };
+                    // 百度地图App URL Scheme
+                    baiduAppUrl: (origin, destination, mode) => {
+                        const modeMap = {
+                            'driving': 'driving',
+                            'walking': 'walking',
+                            'transit': 'transit',
+                            'flying': 'transit' // 百度地图没有飞行模式，用transit代替
+                        };
+                        const baiduMode = modeMap[mode] || 'driving';
+                        return `baidumap://map/direction?origin=${origin.lat},${origin.lng}&destination=${encodeURIComponent(destination)}&mode=${baiduMode}&src=webapp`;
                     },
                     
-                    searchUrl: (query) => `https://www.baidu.com/s?wd=${encodeURIComponent(query)}`
+                    // 高德地图App URL Scheme
+                    gaodeAppUrl: (origin, destination, mode) => {
+                        const modeMap = {
+                            'driving': 0, // 驾车
+                            'walking': 2, // 步行
+                            'transit': 1, // 公交
+                            'flying': 1   // 高德地图没有飞行模式，用公交代替
+                        };
+                        const gaodeMode = modeMap[mode] || 0;
+                        return `amapuri://route/plan/?slat=${origin.lat}&slon=${origin.lng}&sname=当前位置&dlat=&dlon=&dname=${encodeURIComponent(destination)}&dev=0&t=${gaodeMode}`;
+                    },
+                    
+                    // 网页版URL（后备）
+                    baiduWebUrl: (origin, destination, mode) => {
+                        const modeMap = {
+                            'driving': 'driving',
+                            'walking': 'walking',
+                            'transit': 'transit'
+                        };
+                        const baiduMode = modeMap[mode] || 'driving';
+                        return `https://map.baidu.com/dir/?origin=${origin.lat},${origin.lng}&destination=${encodeURIComponent(destination)}&mode=${baiduMode}`;
+                    },
+                    
+                    gaodeWebUrl: (origin, destination, mode) => {
+                        const modeMap = {
+                            'driving': 'car',
+                            'walking': 'walk',
+                            'transit': 'bus'
+                        };
+                        const gaodeMode = modeMap[mode] || 'car';
+                        return `https://uri.amap.com/navigation?from=${origin.lng},${origin.lat}&to=${encodeURIComponent(destination)}&mode=${gaodeMode}`;
+                    }
                 },
                 
-                // 实用服务配置
+                // 实用服务配置（App直连）
                 services: {
-                    hotels: (destination) => `https://hotels.ctrip.com/hotels/list?keyword=${encodeURIComponent(destination)}`,
-                    food: (destination) => `https://www.dianping.com/search/keyword/1/0_${encodeURIComponent(destination)}`,
-                    taxi: () => `https://page.xiaojukeji.com/m/didi-index.html`,
-                    flights: (destination) => `https://flights.ctrip.com/online/channel/international?keyword=${encodeURIComponent(destination)}`
+                    hotels: {
+                        name: '携程',
+                        icon: 'fas fa-bed',
+                        appUrl: (destination) => `ctrip://wireless/hotels?keyword=${encodeURIComponent(destination)}`,
+                        webUrl: (destination) => `https://hotels.ctrip.com/hotels/list?keyword=${encodeURIComponent(destination)}`
+                    },
+                    food: {
+                        name: '大众点评',
+                        icon: 'fas fa-utensils',
+                        appUrl: (destination) => `dianping://search?keyword=${encodeURIComponent(destination)}`,
+                        webUrl: (destination) => `https://www.dianping.com/search/keyword/1/0_${encodeURIComponent(destination)}`
+                    },
+                    taxi: {
+                        name: '滴滴出行',
+                        icon: 'fas fa-taxi',
+                        appUrl: () => `diditaxi://`,
+                        webUrl: () => `https://page.xiaojukeji.com/m/didi-index.html`
+                    },
+                    flights: {
+                        name: '携程机票',
+                        icon: 'fas fa-plane',
+                        appUrl: (destination) => `ctrip://wireless/flights?keyword=${encodeURIComponent(destination)}`,
+                        webUrl: (destination) => `https://flights.ctrip.com/online/channel/international?keyword=${encodeURIComponent(destination)}`
+                    }
                 },
                 
                 // 热门目的地
@@ -959,61 +1052,96 @@
                     { name: "纽约市中心", lat: 40.7128, lng: -74.0060 }
                 ],
                 
-                // 社交平台配置 - 国际热门平台
+                // 社交平台配置 - 国际热门平台（App直连）
                 socialPlatforms: [
                     { 
                         name: 'Facebook', 
                         icon: 'fab fa-facebook-f', 
                         colorClass: 'facebook-color',
-                        url: (keyword) => `https://www.facebook.com/search/top/?q=${encodeURIComponent(keyword)}`,
+                        appUrl: (keyword) => `fb://search/?query=${encodeURIComponent(keyword)}`,
+                        webUrl: (keyword) => `https://www.facebook.com/search/top/?q=${encodeURIComponent(keyword)}`,
                         description: 'Search Facebook content'
                     },
                     { 
                         name: 'Instagram', 
                         icon: 'fab fa-instagram', 
                         colorClass: 'instagram-color',
-                        url: (keyword) => `https://www.instagram.com/explore/tags/${encodeURIComponent(keyword.replace(/ /g, ''))}/`,
+                        appUrl: (keyword) => `instagram://tag?name=${encodeURIComponent(keyword.replace(/ /g, ''))}`,
+                        webUrl: (keyword) => `https://www.instagram.com/explore/tags/${encodeURIComponent(keyword.replace(/ /g, ''))}/`,
                         description: 'Browse Instagram photos'
                     },
                     { 
                         name: 'Twitter', 
                         icon: 'fab fa-twitter', 
                         colorClass: 'twitter-color',
-                        url: (keyword) => `https://twitter.com/search?q=${encodeURIComponent(keyword)}&src=typed_query`,
+                        appUrl: (keyword) => `twitter://search?query=${encodeURIComponent(keyword)}`,
+                        webUrl: (keyword) => `https://twitter.com/search?q=${encodeURIComponent(keyword)}&src=typed_query`,
                         description: 'View Twitter updates'
                     },
                     { 
                         name: 'YouTube', 
                         icon: 'fab fa-youtube', 
                         colorClass: 'youtube-color',
-                        url: (keyword) => `https://www.youtube.com/results?search_query=${encodeURIComponent(keyword)}+travel`,
+                        appUrl: (keyword) => `youtube://search?query=${encodeURIComponent(keyword)}+travel`,
+                        webUrl: (keyword) => `https://www.youtube.com/results?search_query=${encodeURIComponent(keyword)}+travel`,
                         description: 'Watch YouTube travel videos'
                     },
                     { 
                         name: 'Tripadvisor', 
                         icon: 'fas fa-suitcase-rolling', 
                         colorClass: 'tripadvisor-color',
-                        url: (keyword) => `https://www.tripadvisor.com/Search?q=${encodeURIComponent(keyword)}`,
+                        appUrl: (keyword) => `tripadvisor://search?q=${encodeURIComponent(keyword)}`,
+                        webUrl: (keyword) => `https://www.tripadvisor.com/Search?q=${encodeURIComponent(keyword)}`,
                         description: 'View travel reviews'
                     }
                 ],
                 
-                // 地图配置 - Google Maps
+                // 地图配置 - Google Maps App
                 mapConfig: {
-                    getRouteUrl: (origin, destination, mode) => {
-                        // Google Maps路线规划
-                        return `https://www.google.com/maps/dir/?api=1&origin=${origin.lat},${origin.lng}&destination=${encodeURIComponent(destination)}&travelmode=${mode}`;
+                    // Google Maps App URL Scheme
+                    googleAppUrl: (origin, destination, mode) => {
+                        const modeMap = {
+                            'driving': 'driving',
+                            'walking': 'walking',
+                            'transit': 'transit',
+                            'flying': 'driving' // Google Maps没有飞行模式，用驾车代替
+                        };
+                        const googleMode = modeMap[mode] || 'driving';
+                        return `comgooglemaps://?saddr=${origin.lat},${origin.lng}&daddr=${encodeURIComponent(destination)}&directionsmode=${googleMode}`;
                     },
                     
-                    searchUrl: (query) => `https://www.google.com/search?q=${encodeURIComponent(query)}`
+                    // 网页版URL（后备）
+                    googleWebUrl: (origin, destination, mode) => {
+                        return `https://www.google.com/maps/dir/?api=1&origin=${origin.lat},${origin.lng}&destination=${encodeURIComponent(destination)}&travelmode=${mode}`;
+                    }
                 },
                 
-                // 实用服务配置
+                // 实用服务配置（App直连）
                 services: {
-                    hotels: (destination) => `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(destination)}`,
-                    food: (destination) => `https://www.google.com/search?q=${encodeURIComponent(destination)}+restaurants`,
-                    taxi: () => `https://www.uber.com/`,
-                    flights: (destination) => `https://www.skyscanner.com/transport/flights/${encodeURIComponent(destination)}`
+                    hotels: {
+                        name: 'Booking.com',
+                        icon: 'fas fa-bed',
+                        appUrl: (destination) => `booking://search?query=${encodeURIComponent(destination)}`,
+                        webUrl: (destination) => `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(destination)}`
+                    },
+                    food: {
+                        name: 'Google美食',
+                        icon: 'fas fa-utensils',
+                        appUrl: (destination) => `comgooglemaps://?q=${encodeURIComponent(destination)}+restaurants`,
+                        webUrl: (destination) => `https://www.google.com/search?q=${encodeURIComponent(destination)}+restaurants`
+                    },
+                    taxi: {
+                        name: 'Uber',
+                        icon: 'fas fa-taxi',
+                        appUrl: () => `uber://`,
+                        webUrl: () => `https://www.uber.com/`
+                    },
+                    flights: {
+                        name: 'Skyscanner',
+                        icon: 'fas fa-plane',
+                        appUrl: (destination) => `skyscanner://flights?query=${encodeURIComponent(destination)}`,
+                        webUrl: (destination) => `https://www.skyscanner.com/transport/flights/${encodeURIComponent(destination)}`
+                    }
                 },
                 
                 // 热门目的地
@@ -1304,46 +1432,92 @@
             document.getElementById('select-location-option').classList.remove('active');
         }
         
-        // 创建推荐项目HTML
-        function createRecommendationHTML(category, destination) {
-            const config = getCurrentConfig();
-            const searchQueries = {
-                attractions: currentVersion === 'cn' ? `${destination} 景点推荐` : `${destination} attractions`,
-                shopping: currentVersion === 'cn' ? `${destination} 购物推荐` : `${destination} shopping places`,
-                food: currentVersion === 'cn' ? `${destination} 美食推荐` : `${destination} restaurants`,
-                accommodation: currentVersion === 'cn' ? `${destination} 住宿推荐` : `${destination} hotels`
-            };
+        // 打开地图App（带交通方式选择）
+        function openMapWithMode(mapType, mode) {
+            const destination = document.getElementById('destination').value.trim();
+            if (!destination) {
+                alert(getText('errorNoDestination'));
+                return;
+            }
             
-            const query = searchQueries[category];
-            return `
-                <div class="recommendation-item">
-                    <span>${getText(category + 'Desc')}</span>
-                    <a href="${config.mapConfig.searchUrl(query)}" target="_blank" rel="noopener noreferrer">
-                        ${getText('moreInfoText')}
-                    </a>
-                </div>
-            `;
+            if (!userPosition) {
+                alert('请先获取位置信息');
+                return;
+            }
+            
+            const config = getCurrentConfig();
+            
+            if (currentVersion === 'cn') {
+                // 中国版：百度地图或高德地图
+                if (mapType === 'baidu') {
+                    const appUrl = config.mapConfig.baiduAppUrl(userPosition, destination, mode);
+                    const webUrl = config.mapConfig.baiduWebUrl(userPosition, destination, mode);
+                    openApp(appUrl, webUrl);
+                } else if (mapType === 'gaode') {
+                    const appUrl = config.mapConfig.gaodeAppUrl(userPosition, destination, mode);
+                    const webUrl = config.mapConfig.gaodeWebUrl(userPosition, destination, mode);
+                    openApp(appUrl, webUrl);
+                }
+            } else {
+                // 国际版：Google Maps
+                const appUrl = config.mapConfig.googleAppUrl(userPosition, destination, mode);
+                const webUrl = config.mapConfig.googleWebUrl(userPosition, destination, mode);
+                openApp(appUrl, webUrl);
+            }
         }
         
         // 创建社交平台HTML
         function createSocialPlatformsHTML(destination) {
             const config = getCurrentConfig();
             return config.socialPlatforms.map(platform => `
-                <div class="social-item">
+                <div class="social-item" onclick="openApp('${platform.appUrl(destination)}', '${platform.webUrl(destination)}')">
                     <div class="social-name">
                         <div class="social-icon">
                             <i class="${platform.icon}"></i>
                         </div>
                         <div>
-                            <strong>${platform.name}</strong>
+                            <strong>${platform.name} <span class="app-badge">App</span></strong>
                             <div style="font-size: 0.8em; color: #666;">${platform.description}</div>
                         </div>
                     </div>
-                    <a href="${platform.url(destination)}" target="_blank" rel="noopener noreferrer" class="${platform.colorClass}" style="color: white;">
-                        ${getText('viewText')}
-                    </a>
+                    <span class="social-badge">
+                        ${getText('openAppText')}
+                    </span>
                 </div>
             `).join('');
+        }
+        
+        // 创建实用工具HTML
+        function createToolsHTML(destination) {
+            const config = getCurrentConfig();
+            const services = config.services;
+            
+            return `
+                <div class="recommendation-item" onclick="openApp('${services.hotels.appUrl(destination)}', '${services.hotels.webUrl(destination)}')">
+                    <span><i class="${services.hotels.icon}"></i> ${getText('hotelsText')}</span>
+                    <span class="social-badge">
+                        ${services.hotels.name} <span class="app-badge">App</span>
+                    </span>
+                </div>
+                <div class="recommendation-item" onclick="openApp('${services.food.appUrl(destination)}', '${services.food.webUrl(destination)}')">
+                    <span><i class="${services.food.icon}"></i> ${getText('foodSearchText')}</span>
+                    <span class="social-badge">
+                        ${services.food.name} <span class="app-badge">App</span>
+                    </span>
+                </div>
+                <div class="recommendation-item" onclick="openApp('${services.taxi.appUrl()}', '${services.taxi.webUrl()}')">
+                    <span><i class="${services.taxi.icon}"></i> ${getText('taxiText')}</span>
+                    <span class="social-badge">
+                        ${services.taxi.name} <span class="app-badge">App</span>
+                    </span>
+                </div>
+                <div class="recommendation-item" onclick="openApp('${services.flights.appUrl(destination)}', '${services.flights.webUrl(destination)}')">
+                    <span><i class="${services.flights.icon}"></i> 机票查询</span>
+                    <span class="social-badge">
+                        ${services.flights.name} <span class="app-badge">App</span>
+                    </span>
+                </div>
+            `;
         }
         
         // 创建路线规划HTML
@@ -1362,16 +1536,24 @@
                 // 中国版显示百度地图和高德地图按钮
                 mapButtonsHTML = `
                     <div class="map-buttons">
-                        <button class="map-app-btn baidu-map-btn" onclick="openBaiduMap('${destination}')">
-                            <i class="fas fa-map"></i> 百度地图
+                        <button class="map-app-btn baidu-map-btn" onclick="openMapWithMode('baidu', 'driving')">
+                            <i class="fas fa-map"></i> 百度地图 <span class="app-badge">App</span>
                         </button>
-                        <button class="map-app-btn gaode-map-btn" onclick="openGaodeMap('${destination}')">
-                            <i class="fas fa-map-marked-alt"></i> 高德地图
+                        <button class="map-app-btn gaode-map-btn" onclick="openMapWithMode('gaode', 'driving')">
+                            <i class="fas fa-map-marked-alt"></i> 高德地图 <span class="app-badge">App</span>
                         </button>
+                    </div>
+                    <p style="margin-top: 10px; color: #666; font-size: 14px;">选择交通方式：</p>
+                    <div class="mode-selector">
+                        ${modes.map(mode => `
+                            <button class="mode-btn" onclick="openMapWithMode('baidu', '${mode.mode}')">
+                                <i class="fas ${mode.icon}"></i> ${mode.name}
+                            </button>
+                        `).join('')}
                     </div>
                     <div class="mode-selector">
                         ${modes.map(mode => `
-                            <button class="mode-btn" onclick="openMapWithMode('${destination}', '${mode.mode}')">
+                            <button class="mode-btn" onclick="openMapWithMode('gaode', '${mode.mode}')">
                                 <i class="fas ${mode.icon}"></i> ${mode.name}
                             </button>
                         `).join('')}
@@ -1381,13 +1563,14 @@
                 // 国际版显示Google地图按钮
                 mapButtonsHTML = `
                     <div class="map-buttons">
-                        <button class="map-app-btn google-map-btn" onclick="openGoogleMap('${destination}')">
-                            <i class="fab fa-google"></i> Google地图
+                        <button class="map-app-btn google-map-btn" onclick="openMapWithMode('google', 'driving')">
+                            <i class="fab fa-google"></i> Google地图 <span class="app-badge">App</span>
                         </button>
                     </div>
+                    <p style="margin-top: 10px; color: #666; font-size: 14px;">选择交通方式：</p>
                     <div class="mode-selector">
                         ${modes.map(mode => `
-                            <button class="mode-btn" onclick="openGoogleMapWithMode('${destination}', '${mode.mode}')">
+                            <button class="mode-btn" onclick="openMapWithMode('google', '${mode.mode}')">
                                 <i class="fas ${mode.icon}"></i> ${mode.name}
                             </button>
                         `).join('')}
@@ -1402,55 +1585,6 @@
                     <i class="fas fa-info-circle"></i> ${getText('mapAdditionalInstruction')}
                 </div>
             `;
-        }
-        
-        // 打开百度地图
-        function openBaiduMap(destination) {
-            const config = getCurrentConfig();
-            const baiduUrl = `baidumap://map/direction?origin=${userPosition.lat},${userPosition.lng}&destination=${encodeURIComponent(destination)}&mode=driving&src=webapp`;
-            const webUrl = `https://map.baidu.com/dir/?origin=${userPosition.lat},${userPosition.lng}&destination=${encodeURIComponent(destination)}&mode=driving`;
-            
-            // 尝试打开App，如果失败则打开网页版
-            window.location.href = baiduUrl;
-            setTimeout(() => {
-                window.open(webUrl, '_blank');
-            }, 500);
-        }
-        
-        // 打开高德地图
-        function openGaodeMap(destination) {
-            const gaodeUrl = `amapuri://route/plan/?slat=${userPosition.lat}&slon=${userPosition.lng}&sname=起点&dlat=&dlon=&dname=${encodeURIComponent(destination)}&dev=0&t=0`;
-            const webUrl = `https://uri.amap.com/navigation?from=${userPosition.lng},${userPosition.lat}&to=${encodeURIComponent(destination)}&mode=car`;
-            
-            // 尝试打开App，如果失败则打开网页版
-            window.location.href = gaodeUrl;
-            setTimeout(() => {
-                window.open(webUrl, '_blank');
-            }, 500);
-        }
-        
-        // 打开Google地图
-        function openGoogleMap(destination) {
-            const url = `https://www.google.com/maps/dir/?api=1&origin=${userPosition.lat},${userPosition.lng}&destination=${encodeURIComponent(destination)}&travelmode=driving`;
-            window.open(url, '_blank');
-        }
-        
-        // 打开Google地图（带模式）
-        function openGoogleMapWithMode(destination, mode) {
-            const url = `https://www.google.com/maps/dir/?api=1&origin=${userPosition.lat},${userPosition.lng}&destination=${encodeURIComponent(destination)}&travelmode=${mode}`;
-            window.open(url, '_blank');
-        }
-        
-        // 打开地图（带模式）- 中国版
-        function openMapWithMode(destination, mode) {
-            const baiduUrl = `baidumap://map/direction?origin=${userPosition.lat},${userPosition.lng}&destination=${encodeURIComponent(destination)}&mode=${mode}&src=webapp`;
-            const webUrl = `https://map.baidu.com/dir/?origin=${userPosition.lat},${userPosition.lng}&destination=${encodeURIComponent(destination)}&mode=${mode}`;
-            
-            // 尝试打开App，如果失败则打开网页版
-            window.location.href = baiduUrl;
-            setTimeout(() => {
-                window.open(webUrl, '_blank');
-            }, 500);
         }
         
         // 规划行程主函数
@@ -1494,35 +1628,6 @@
                 `;
                 resultsDiv.appendChild(routesSection);
                 
-                // 本地推荐部分
-                const recommendationsSection = document.createElement('div');
-                recommendationsSection.className = 'section section-rankings';
-                recommendationsSection.innerHTML = `
-                    <h2><i class="fas fa-star"></i> ${getText('recommendationsTitle')}</h2>
-                    <p>${getText('recommendationsDesc', {dest: destination})}</p>
-                    
-                    <h3><span class="category-tag tag-attractions">${getText('attractionsTitle')}</span> ${getText('attractionsDesc')}</h3>
-                    <div class="recommendations-grid">
-                        ${createRecommendationHTML('attractions', destination)}
-                    </div>
-                    
-                    <h3><span class="category-tag tag-shopping">${getText('shoppingTitle')}</span> ${getText('shoppingDesc')}</h3>
-                    <div class="recommendations-grid">
-                        ${createRecommendationHTML('shopping', destination)}
-                    </div>
-                    
-                    <h3><span class="category-tag tag-food">${getText('foodTitle')}</span> ${getText('foodDesc')}</h3>
-                    <div class="recommendations-grid">
-                        ${createRecommendationHTML('food', destination)}
-                    </div>
-                    
-                    <h3><span class="category-tag tag-accommodation">${getText('accommodationTitle')}</span> ${getText('accommodationDesc')}</h3>
-                    <div class="recommendations-grid">
-                        ${createRecommendationHTML('accommodation', destination)}
-                    </div>
-                `;
-                resultsDiv.appendChild(recommendationsSection);
-                
                 // 社交热点部分
                 const socialSection = document.createElement('div');
                 socialSection.className = 'section section-social';
@@ -1542,30 +1647,7 @@
                     <h2><i class="fas fa-tools"></i> ${getText('toolsTitle')}</h2>
                     <p>${getText('toolsDesc', {dest: destination})}</p>
                     <div class="recommendations-grid">
-                        <div class="recommendation-item">
-                            <span><i class="fas fa-bed"></i> ${getText('hotelsText')}</span>
-                            <a href="${config.services.hotels(destination)}" target="_blank" rel="noopener noreferrer">
-                                ${currentVersion === 'cn' ? '携程' : 'Booking'}
-                            </a>
-                        </div>
-                        <div class="recommendation-item">
-                            <span><i class="fas fa-utensils"></i> ${getText('foodSearchText')}</span>
-                            <a href="${config.services.food(destination)}" target="_blank" rel="noopener noreferrer">
-                                ${currentVersion === 'cn' ? '大众点评' : 'Food Search'}
-                            </a>
-                        </div>
-                        <div class="recommendation-item">
-                            <span><i class="fas fa-taxi"></i> ${getText('taxiText')}</span>
-                            <a href="${config.services.taxi()}" target="_blank" rel="noopener noreferrer">
-                                ${currentVersion === 'cn' ? '滴滴' : 'Uber'}
-                            </a>
-                        </div>
-                        <div class="recommendation-item">
-                            <span><i class="fas fa-info-circle"></i> ${getText('moreInfoText')}</span>
-                            <a href="${config.mapConfig.searchUrl(destination + ' ' + (currentVersion === 'cn' ? '旅游攻略' : 'travel guide'))}" target="_blank" rel="noopener noreferrer">
-                                ${getText('moreInfoText')}
-                            </a>
-                        </div>
+                        ${createToolsHTML(destination)}
                     </div>
                     <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
                         <p><strong><i class="fas fa-lightbulb"></i> ${getText('tipsTitle')}</strong> ${getText('tips1')}</p>
