@@ -1,82 +1,148 @@
 <!DOCTYPE html>
-<html lang="zh-HK">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>本地旅遊行程規劃網站</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>智能旅游行程规划</title>
     <style>
         * {
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
         body {
-            font-family: 'Microsoft JhengHei', 'PingFang TC', Arial, sans-serif;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            margin: 0;
+            padding: 0;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             color: #333;
             min-height: 100vh;
+            font-size: 16px;
         }
         .container {
             background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            position: relative;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        .version-switcher {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .version-btn {
+            padding: 12px 20px;
+            background: #f1f2f6;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+            flex: 1;
+            min-width: 140px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .version-btn:hover {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        .version-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+            box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
         }
         h1 {
             color: #2c3e50;
             text-align: center;
             margin-bottom: 10px;
-            font-size: 2.5em;
+            font-size: 24px;
+            padding: 0 10px;
         }
         .subtitle {
             text-align: center;
             color: #7f8c8d;
-            margin-bottom: 30px;
-            font-size: 1.1em;
+            margin-bottom: 25px;
+            font-size: 14px;
+            padding: 0 10px;
+            line-height: 1.4;
         }
         .input-section {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
+            flex-direction: column;
         }
-        input, button {
+        .location-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .location-selector {
             padding: 15px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+        }
+        .location-selector h3 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 18px;
+        }
+        select, input, button {
+            padding: 16px;
             border: 2px solid #ddd;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 16px;
             transition: all 0.3s;
+            width: 100%;
+        }
+        select {
+            background-color: #f8f9fa;
+            cursor: pointer;
         }
         input {
-            flex: 1;
             background-color: #f8f9fa;
         }
-        input:focus {
+        select:focus, input:focus {
             outline: none;
             border-color: #3498db;
             background-color: white;
             box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
         }
-        button {
+        .main-btn {
             background: linear-gradient(to right, #3498db, #2980b9);
             color: white;
             border: none;
             cursor: pointer;
             font-weight: bold;
-            white-space: nowrap;
+            padding: 16px;
+            border-radius: 10px;
+            font-size: 18px;
+            margin-top: 10px;
         }
-        button:hover {
+        .main-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 7px 14px rgba(52, 152, 219, 0.3);
         }
-        button:active {
+        .main-btn:active {
             transform: translateY(0);
         }
         .location-status {
             padding: 15px;
             margin: 15px 0;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 14px;
         }
         .success { background: #d4edda; color: #155724; border-left: 4px solid #28a745; }
@@ -88,41 +154,42 @@
         }
         .section {
             background: white;
-            border-radius: 10px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             border-top: 5px solid;
             transition: transform 0.3s;
         }
         .section:hover {
-            transform: translateY(-5px);
+            transform: translateY(-3px);
         }
         .section-routes { border-top-color: #3498db; }
         .section-rankings { border-top-color: #e74c3c; }
         .section-social { border-top-color: #9b59b6; }
-        .section-booking { border-top-color: #2ecc71; }
+        .section-tools { border-top-color: #2ecc71; }
         h2 {
             color: #2c3e50;
             margin-top: 0;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
             gap: 10px;
+            font-size: 20px;
         }
         h2 i {
-            font-size: 1.5em;
+            font-size: 1.3em;
         }
         .social-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
         }
         .social-item {
             padding: 15px;
             background: #f8f9fa;
-            border-radius: 8px;
+            border-radius: 10px;
             transition: all 0.3s;
             display: flex;
             justify-content: space-between;
@@ -130,10 +197,10 @@
         }
         .social-item:hover {
             background: #e9ecef;
-            transform: translateX(5px);
+            transform: translateX(3px);
         }
         .social-icon {
-            font-size: 1.5em;
+            font-size: 1.3em;
             margin-right: 10px;
             width: 30px;
             text-align: center;
@@ -147,10 +214,11 @@
             color: #3498db;
             text-decoration: none;
             font-weight: 500;
-            padding: 5px 10px;
-            border-radius: 4px;
+            padding: 8px 12px;
+            border-radius: 6px;
             transition: all 0.2s;
             white-space: nowrap;
+            display: inline-block;
         }
         a:hover {
             background: #3498db;
@@ -159,7 +227,7 @@
         }
         .category-tag {
             display: inline-block;
-            padding: 4px 8px;
+            padding: 4px 10px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: bold;
@@ -170,16 +238,16 @@
         .tag-food { background: #e8f5e9; color: #2e7d32; }
         .tag-accommodation { background: #e3f2fd; color: #1565c0; }
         .recommendations-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
             margin-top: 15px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         .recommendation-item {
             padding: 15px;
             background: #f8f9fa;
-            border-radius: 8px;
+            border-radius: 10px;
             transition: all 0.3s;
             display: flex;
             justify-content: space-between;
@@ -187,13 +255,13 @@
         }
         .recommendation-item:hover {
             background: #e9ecef;
-            transform: translateX(5px);
+            transform: translateX(3px);
         }
         .loading {
             text-align: center;
             padding: 30px;
             color: #7f8c8d;
-            font-size: 1.2em;
+            font-size: 16px;
         }
         .loading:after {
             content: '...';
@@ -206,11 +274,12 @@
         }
         .no-api-note {
             background: #e8f4fc;
-            padding: 20px;
-            border-radius: 8px;
+            padding: 15px;
+            border-radius: 10px;
             margin: 15px 0;
-            line-height: 1.6;
+            line-height: 1.5;
             border-left: 4px solid #3498db;
+            font-size: 14px;
         }
         .popular-destinations {
             display: flex;
@@ -220,12 +289,15 @@
             margin-bottom: 25px;
         }
         .popular-btn {
-            padding: 8px 15px;
+            padding: 10px 15px;
             background: #f1f2f6;
             border: 1px solid #ddd;
             border-radius: 20px;
             cursor: pointer;
             transition: all 0.3s;
+            font-size: 14px;
+            flex-grow: 1;
+            min-width: calc(50% - 10px);
         }
         .popular-btn:hover {
             background: #3498db;
@@ -234,354 +306,1029 @@
         }
         .feature-list {
             display: flex;
-            justify-content: space-around;
-            margin: 30px 0;
-            text-align: center;
-            flex-wrap: wrap;
-            gap: 20px;
+            flex-direction: column;
+            gap: 15px;
+            margin: 25px 0;
         }
         .feature {
-            flex: 1;
-            min-width: 200px;
-            padding: 20px;
+            padding: 15px;
             background: white;
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            text-align: center;
         }
         .feature-icon {
-            font-size: 2.5em;
-            margin-bottom: 10px;
+            font-size: 2em;
+            margin-bottom: 8px;
         }
         .feature h3 {
             margin-top: 0;
             color: #2c3e50;
+            font-size: 16px;
+        }
+        .feature p {
+            font-size: 13px;
+            color: #666;
         }
         .social-colors {
             color: #fff;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.8em;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 13px;
         }
         .douyin-color { background: linear-gradient(to right, #FE2C55, #25F4EE); }
         .xiaohongshu-color { background: #FF2442; }
         .bilibili-color { background: #FB7299; }
+        .weibo-color { background: #E6162D; }
+        .zhihu-color { background: #0084FF; }
+        .dianping-color { background: #FF4E3C; }
+        .ctrip-color { background: #FF6600; }
         .facebook-color { background: #1877F2; }
-        .threads-color { background: #000000; }
-        .youtube-color { background: #FF0000; }
         .instagram-color { background: linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D); }
         .twitter-color { background: #1DA1F2; }
-        .macau-theme {
-            background: linear-gradient(135deg, #f5f7fa 0%, #d1e7ff 100%);
+        .youtube-color { background: #FF0000; }
+        .google-color { background: #4285F4; }
+        .tripadvisor-color { background: #00aa87; }
+        .route-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
         }
-        .macau-header {
-            color: #e63946;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        .route-btn {
+            padding: 14px;
+            background: #f1f2f6;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
-        @media (max-width: 768px) {
-            .input-section {
-                flex-direction: column;
+        .route-btn:hover {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        .route-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        .location-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .location-btn {
+            padding: 12px 15px;
+            background: #f1f2f6;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            flex: 1;
+            text-align: center;
+        }
+        .location-btn:hover {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        .location-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        .location-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .location-option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .location-option:hover {
+            background: #f0f8ff;
+        }
+        .location-option.active {
+            background: #e1f0ff;
+            border-color: #3498db;
+        }
+        .location-option input {
+            margin-right: 10px;
+            width: auto;
+        }
+        .location-option label {
+            cursor: pointer;
+            flex-grow: 1;
+            font-size: 15px;
+        }
+        .language-switcher {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+        .lang-btn {
+            padding: 8px 15px;
+            background: #f1f2f6;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        .lang-btn:hover {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        .lang-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        .map-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .map-app-btn {
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 16px;
+            flex: 1;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+        }
+        .baidu-map-btn {
+            background: #3385ff;
+            color: white;
+        }
+        .gaode-map-btn {
+            background: #0089ff;
+            color: white;
+        }
+        .google-map-btn {
+            background: #4285f4;
+            color: white;
+        }
+        .mode-selector {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .mode-btn {
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            flex: 1;
+            text-align: center;
+            min-width: 80px;
+        }
+        .mode-btn:hover {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        .mode-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        @media (min-width: 768px) {
+            .container {
+                max-width: 768px;
+                margin: 20px auto;
+                padding: 30px;
+                border-radius: 20px;
             }
-            .recommendations-grid, .social-grid {
-                grid-template-columns: 1fr;
+            .input-section {
+                flex-direction: row;
             }
             .feature-list {
-                flex-direction: column;
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            .feature {
+                flex: 1;
+                min-width: calc(50% - 15px);
+            }
+            .location-section {
+                flex-direction: row;
+            }
+            .location-selector {
+                flex: 1;
+            }
+            .social-grid, .recommendations-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+            .route-options, .map-buttons {
+                flex-direction: row;
+            }
+            .popular-btn {
+                min-width: auto;
+                flex-grow: 0;
+            }
+        }
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 22px;
+            }
+            .subtitle {
+                font-size: 13px;
+            }
+            .version-btn {
+                min-width: 130px;
+                padding: 10px 15px;
+            }
+            .popular-btn {
+                min-width: calc(100% - 10px);
             }
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
-<body class="macau-theme">
+<body>
     <div class="container">
-        <h1 class="macau-header"><i class="fas fa-plane-departure"></i> 智能旅遊行程規劃</h1>
-        <div class="subtitle">完全本地運行 · 無需API金鑰 · 默認位置：澳門氹仔中央公園 · 即時路線規劃</div>
+        <div class="version-switcher">
+            <button class="version-btn active" id="cn-version-btn" onclick="switchVersion('cn')">中国版</button>
+            <button class="version-btn" id="intl-version-btn" onclick="switchVersion('intl')">国际版</button>
+        </div>
+        
+        <div class="language-switcher" id="language-switcher">
+            <button class="lang-btn active" onclick="switchLanguage('zh-CN')">简体</button>
+            <button class="lang-btn" onclick="switchLanguage('zh-TW')">繁體</button>
+        </div>
+        
+        <h1 id="main-title"><i class="fas fa-plane-departure"></i> 智能旅游行程规划</h1>
+        <div class="subtitle" id="version-subtitle">完全本地运行 · 无需API密钥 · 实时路线规划 · 支持全国城市</div>
         
         <div class="no-api-note">
-            <i class="fas fa-info-circle"></i> 本工具完全在您的瀏覽器中運行，無需任何API金鑰。所有數據均來自公開網絡資源。
+            <i class="fas fa-info-circle"></i> <span id="version-note">本工具完全在您的浏览器中运行，无需任何API密钥。所有数据均来自公开网络资源。</span>
         </div>
         
         <div class="feature-list">
             <div class="feature">
                 <div class="feature-icon">📍</div>
-                <h3>澳門出發</h3>
-                <p>默認從澳門氹仔中央公園出發</p>
+                <h3 id="feature-location">出发地选择</h3>
+                <p id="feature-location-desc">可选择多个热门城市出发</p>
             </div>
             <div class="feature">
                 <div class="feature-icon">🗺️</div>
-                <h3>路線規劃</h3>
-                <p>提供步行、公交和自駕路線</p>
+                <h3 id="feature-routes">路线规划</h3>
+                <p id="feature-routes-desc">提供百度/高德地图路线</p>
             </div>
             <div class="feature">
                 <div class="feature-icon">🏆</div>
-                <h3>熱門推薦</h3>
-                <p>推薦當地熱門景點與活動</p>
+                <h3 id="feature-recommend">热门推荐</h3>
+                <p id="feature-recommend-desc">推荐当地热门景点与活动</p>
             </div>
             <div class="feature">
                 <div class="feature-icon">📱</div>
-                <h3>社群熱點</h3>
-                <p>查看社交媒體上的熱門內容</p>
+                <h3 id="feature-social">社交热点</h3>
+                <p id="feature-social-desc">查看社交媒体上的热门内容</p>
             </div>
         </div>
         
+        <!-- 出发地点选择部分 -->
+        <div class="location-section">
+            <div class="location-selector">
+                <h3><i class="fas fa-map-marker-alt"></i> <span id="location-select-title">选择出发地</span></h3>
+                <p id="location-select-desc">请选择您的出发地点：</p>
+                <div class="location-options">
+                    <div class="location-option" id="current-location-option">
+                        <input type="radio" id="location-current" name="location-type" checked>
+                        <label for="location-current" id="location-current-label">使用我的当前位置</label>
+                    </div>
+                    <div class="location-option" id="select-location-option">
+                        <input type="radio" id="location-select" name="location-type">
+                        <label for="location-select" id="location-select-label">从热门城市选择</label>
+                    </div>
+                </div>
+                
+                <div id="custom-location-selector" style="display: none; margin-top: 15px;">
+                    <label for="city-locations" id="city-locations-label">选择出发城市：</label>
+                    <select id="city-locations">
+                        <!-- 城市选项会根据版本动态生成 -->
+                    </select>
+                </div>
+                
+                <div class="location-buttons">
+                    <button class="location-btn" id="update-location-btn" onclick="updateLocation()"><i class="fas fa-sync-alt"></i> <span id="update-location-text">更新位置</span></button>
+                    <button class="location-btn" id="reset-location-btn" onclick="resetToDefaultLocation()"><i class="fas fa-home"></i> <span id="reset-location-text">重置</span></button>
+                </div>
+            </div>
+            
+            <div class="location-selector">
+                <h3><i class="fas fa-location-arrow"></i> <span id="location-status-title">当前位置状态</span></h3>
+                <div id="location-status" class="location-status info">
+                    <i class="fas fa-sync fa-spin"></i> <span id="location-status-text">正在获取您的位置...</span>
+                </div>
+                <div id="location-details">
+                    <p><strong id="location-detail-start">出发地：</strong> <span id="current-location-name">北京市中心</span></p>
+                    <p><strong id="location-detail-coords">坐标：</strong> <span id="current-coordinates">纬度 39.9042, 经度 116.4074</span></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 目的地输入部分 -->
         <div class="input-section">
-            <input type="text" id="destination" placeholder="請輸入目的地（例如：澳門大三巴、香港迪士尼、東京晴空塔）" onkeypress="handleKeyPress(event)">
-            <button onclick="planTrip()" id="plan-btn"><i class="fas fa-search"></i> 規劃行程</button>
+            <input type="text" id="destination" placeholder="请输入目的地（例如：北京故宫、上海外滩、广州塔）" onkeypress="handleKeyPress(event)">
+            <button class="main-btn" onclick="planTrip()" id="plan-btn"><i class="fas fa-search"></i> <span id="plan-trip-text">规划行程</span></button>
         </div>
         
         <div class="popular-destinations">
-            <div>熱門目的地：</div>
-            <button class="popular-btn" onclick="setDestination('澳門大三巴牌坊')">澳門大三巴</button>
-            <button class="popular-btn" onclick="setDestination('澳門威尼斯人')">澳門威尼斯人</button>
-            <button class="popular-btn" onclick="setDestination('香港迪士尼樂園')">香港迪士尼</button>
-            <button class="popular-btn" onclick="setDestination('東京晴空塔')">東京晴空塔</button>
-            <button class="popular-btn" onclick="setDestination('台北101')">台北101</button>
-        </div>
-        
-        <div id="location-status" class="location-status info">
-            <i class="fas fa-sync fa-spin"></i> 正在獲取您的位置...（超時將使用澳門氹仔中央公園）
+            <div id="popular-dest-label">热门目的地：</div>
+            <!-- 热门目的地按钮会根据版本动态生成 -->
         </div>
         
         <div id="results" class="results-container"></div>
     </div>
 
     <script>
+        // 全局变量
         let userPosition = null;
-        // 澳門氹仔中央公園座標
-        const DEFAULT_POSITION = { lat: 22.1568, lng: 113.5610 };
-        const DEFAULT_LOCATION_NAME = "澳門氹仔中央公園";
+        let currentVersion = 'cn'; // 'cn' 或 'intl'
+        let currentLanguage = 'zh-CN'; // 'zh-CN', 'zh-TW'
         
-        let popularDestinations = {
-            '澳門': {
-                attractions: ['大三巴牌坊', '澳門旅遊塔', '威尼斯人度假村', '媽閣廟', '議事亭前地', '龍環葡韻', '澳門科學館', '漁人碼頭', '路環島', '澳門銀河'],
-                shopping: ['威尼斯人大運河購物中心', '新八佰伴', '金沙城中心', '新濠天地', '永利澳門', '壹號廣場', '澳門DFS免稅店', '官也街', '大三巴手信街', '水坑尾街'],
-                food: ['安德魯餅店蛋撻', '瑪嘉烈蛋撻', '大利來記豬扒包', '黃枝記粥麵', '陳光記燒臘', '義順牛奶公司', '龍華茶樓', '澳門葡國餐廳', '譚家魚翅', '莫義記榴槤雪糕'],
-                accommodation: ['澳門威尼斯人酒店', '澳門銀河酒店', '新濠影匯', '永利皇宮', '澳門美高梅', '澳門金沙城中心康萊德酒店', '澳門巴黎人', '澳門十六浦索菲特大酒店', '澳門勵庭海景酒店', '澳門皇冠假日酒店']
+        // 语言文本配置
+        const languageTexts = {
+            'zh-CN': {
+                // 中国版简体中文
+                title: '智能旅游行程规划',
+                subtitle: '完全本地运行 · 无需API密钥 · 实时路线规划 · 支持全国城市',
+                note: '本工具完全在您的浏览器中运行，无需任何API密钥。所有数据均来自公开网络资源。',
+                
+                // 功能描述
+                featureLocation: '出发地选择',
+                featureLocationDesc: '可选择多个热门城市出发',
+                featureRoutes: '路线规划',
+                featureRoutesDesc: '提供百度/高德地图路线',
+                featureRecommend: '热门推荐',
+                featureRecommendDesc: '推荐当地热门景点与活动',
+                featureSocial: '社交热点',
+                featureSocialDesc: '查看社交媒体上的热门内容',
+                
+                // 位置选择
+                locationSelectTitle: '选择出发地',
+                locationSelectDesc: '请选择您的出发地点：',
+                locationCurrentLabel: '使用我的当前位置',
+                locationSelectLabel: '从热门城市选择',
+                cityLocationsLabel: '选择出发城市：',
+                updateLocationText: '更新位置',
+                resetLocationText: '重置',
+                
+                // 位置状态
+                locationStatusTitle: '当前位置状态',
+                locationStatusText: '正在获取您的位置...',
+                locationDetailStart: '出发地：',
+                locationDetailCoords: '坐标：',
+                
+                // 目的地输入
+                destinationPlaceholder: '请输入目的地（例如：北京故宫、上海外滩、广州塔）',
+                planTripText: '规划行程',
+                
+                // 热门目的地
+                popularDestLabel: '热门目的地：',
+                
+                // 结果部分
+                loadingText: '正在规划您的行程...',
+                routesTitle: '路线规划',
+                routesDesc: '从 {start} 前往 {dest} 的路线：',
+                recommendationsTitle: '本地推荐',
+                recommendationsDesc: '为您推荐 {dest} 的热门地点：',
+                attractionsTitle: '景点',
+                attractionsDesc: '推荐景点',
+                shoppingTitle: '购物',
+                shoppingDesc: '推荐购物地点',
+                foodTitle: '美食',
+                foodDesc: '推荐餐厅与美食',
+                accommodationTitle: '住宿',
+                accommodationDesc: '推荐住宿',
+                socialTitle: '社交热点',
+                socialDesc: '查看社交媒体上关于 {dest} 的热门内容：',
+                toolsTitle: '实用工具',
+                toolsDesc: '为您的 {dest} 之旅提供便利：',
+                
+                // 地图说明
+                mapInstruction: '点击下方按钮在百度或高德地图App中查看详细路线',
+                mapAdditionalInstruction: '使用百度或高德地图规划路线，点击按钮将打开地图App并自动规划路线',
+                
+                // 出行方式
+                modesDriving: '驾车',
+                modesWalking: '步行',
+                modesTransit: '公共交通',
+                modesFlying: '飞机',
+                
+                // 实用工具
+                hotelsText: '住宿查询',
+                foodSearchText: '美食推荐',
+                taxiText: '出行服务',
+                moreInfoText: '更多信息',
+                viewText: '查看',
+                
+                // 小贴士
+                tipsTitle: '小贴士：',
+                tips1: '所有链接将在新标签页打开，方便您比较和规划。',
+                tips2: '出发地：{start} (纬度: {lat}, 经度: {lng})',
+                tips3: '部分服务可能需要您安装相应的手机应用才能获得最佳体验。',
+                
+                // 错误信息
+                errorNoDestination: '请输入目的地！',
+                errorPlanning: '发生错误：{error}，请检查网络连接后重试。',
+                errorLocationPermission: '位置权限被拒绝，请在浏览器设置中允许位置访问，或选择热门城市。',
+                errorLocationUnavailable: '位置信息不可用，请检查设备定位设置。',
+                errorLocationTimeout: '获取位置超时，请检查网络并重试。'
             },
-            '香港': {
-                attractions: ['香港迪士尼樂園', '太平山頂', '維多利亞港', '海洋公園', '星光大道', '香港故宮文化博物館', '廟街夜市', '蘭桂坊', '香港海洋公園', '天星小輪'],
-                shopping: ['銅鑼灣時代廣場', '尖沙咀海港城', '旺角朗豪坊', '中環IFC', '太古廣場', '沙田新城市廣場', '東薈城名店倉', 'APM商場', 'K11 MUSEA', '希慎廣場'],
-                food: ['鏞記酒家', '蘭芳園絲襪奶茶', '九記牛腩', '添好運點心', '澳洲牛奶公司', '一樂燒鵝', '泰昌餅家蛋撻', '麥奀雲吞麵世家', '佳佳甜品', '橋底辣蟹'],
-                accommodation: ['香港半島酒店', '香港麗思卡爾頓酒店', '香港四季酒店', '帝京酒店', '如心海景酒店', '香港文華東方酒店', '港島香格里拉大酒店', '香港W酒店', '九龍香格里拉大酒店', '香港喜來登酒店']
-            },
-            '東京': {
-                attractions: ['東京晴空塔', '東京迪士尼樂園', '淺草寺雷門', '明治神宮', '澀谷十字路口', '東京鐵塔', '上野公園', '新宿御苑', '台場海濱公園', '三鷹之森吉卜力美術館'],
-                shopping: ['銀座三越', '新宿伊勢丹', '澀谷109', '原竹下通', '秋葉原電器街', '表參道之丘', '六本木新城', '池袋太陽城', '東京車站一番街', '阿美橫町'],
-                food: ['壽司大築地市場', '一蘭拉麵', '蟹道樂', '磯丸水產', '敘敘苑燒肉', 'Afuri阿夫利拉麵', '利久牛舌', '玄品河豚', '五代目 野田岩 鰻魚飯', 'Harbs水果千層蛋糕'],
-                accommodation: ['東京帝國酒店', '東京半島酒店', '東京柏悅酒店', '新宿華盛頓酒店', 'APA酒店', '東京王子大飯店', '東京站酒店', '東京椿山莊酒店', '三井花園飯店', '東京皇家王子大飯店']
-            },
-            '台北': {
-                attractions: ['台北101觀景台', '國立故宮博物院', '中正紀念堂', '西門町', '士林夜市', '龍山寺', '陽明山國家公園', '貓空纜車', '華山1914文創園區', '北投溫泉博物館'],
-                shopping: ['信義新光三越', '東區SOGO', '西門町徒步區', '台北車站地下街', '美麗華百樂園', '微風廣場', '誠品信義店', '京站時尚廣場', 'ATT 4 FUN', '統一時代百貨'],
-                food: ['鼎泰豐小籠包', '永康牛肉麵', '阿宗麵線', '林東芳牛肉麵', '鬍鬚張魯肉飯', '阜杭豆漿', '佳德鳳梨酥', '寧夏夜市', '饒河街夜市', '老天祿滷味'],
-                accommodation: ['台北君悅酒店', 'W酒店台北', '晶華酒店', '誠品行旅', '德立莊酒店', '台北寒舍艾美酒店', '台北遠東香格里拉', '台北花園大酒店', '台北凱撒大飯店', '台北中山雅樂軒酒店']
+            
+            'zh-TW': {
+                // 國際版繁體中文
+                title: '智能旅遊行程規劃',
+                subtitle: '完全本地運行 · 無需API密鑰 · 即時路線規劃 · 支持全球目的地',
+                note: '本工具完全在您的瀏覽器中運行，無需任何API密鑰。所有數據均來自公開網絡資源。',
+                
+                // 功能描述
+                featureLocation: '出發地選擇',
+                featureLocationDesc: '可選擇多個熱門城市出發',
+                featureRoutes: '路線規劃',
+                featureRoutesDesc: '提供Google地圖路線規劃',
+                featureRecommend: '熱門推薦',
+                featureRecommendDesc: '推薦當地熱門景點與活動',
+                featureSocial: '社群熱點',
+                featureSocialDesc: '查看社交媒體上的熱門內容',
+                
+                // 位置選擇
+                locationSelectTitle: '選擇出發地',
+                locationSelectDesc: '請選擇您的出發地點：',
+                locationCurrentLabel: '使用我的目前位置',
+                locationSelectLabel: '從熱門城市選擇',
+                cityLocationsLabel: '選擇出發城市：',
+                updateLocationText: '更新位置',
+                resetLocationText: '重置',
+                
+                // 位置狀態
+                locationStatusTitle: '目前位置狀態',
+                locationStatusText: '正在獲取您的位置...',
+                locationDetailStart: '出發地：',
+                locationDetailCoords: '座標：',
+                
+                // 目的地輸入
+                destinationPlaceholder: '請輸入目的地（例如：東京晴空塔、香港迪士尼、台北101）',
+                planTripText: '規劃行程',
+                
+                // 熱門目的地
+                popularDestLabel: '熱門目的地：',
+                
+                // 結果部分
+                loadingText: '正在規劃您的行程...',
+                routesTitle: '路線規劃',
+                routesDesc: '從 {start} 前往 {dest} 的路線：',
+                recommendationsTitle: '本地推薦',
+                recommendationsDesc: '為您推薦 {dest} 的熱門地點：',
+                attractionsTitle: '景點',
+                attractionsDesc: '推薦景點',
+                shoppingTitle: '購物',
+                shoppingDesc: '推薦購物地點',
+                foodTitle: '美食',
+                foodDesc: '推薦餐廳與美食',
+                accommodationTitle: '住宿',
+                accommodationDesc: '推薦住宿',
+                socialTitle: '社群熱點',
+                socialDesc: '查看社交媒體上關於 {dest} 的熱門內容：',
+                toolsTitle: '實用工具',
+                toolsDesc: '為您的 {dest} 之旅提供便利：',
+                
+                // 地圖說明
+                mapInstruction: '點擊下方按鈕在Google地圖中查看詳細路線',
+                mapAdditionalInstruction: '使用Google地圖規劃路線，點擊按鈕將跳轉到Google地圖查看詳細路線',
+                
+                // 出行方式
+                modesDriving: '駕車',
+                modesWalking: '步行',
+                modesTransit: '公共交通',
+                modesFlying: '飛機',
+                
+                // 實用工具
+                hotelsText: '住宿查詢',
+                foodSearchText: '美食推薦',
+                taxiText: '出行服務',
+                moreInfoText: '更多資訊',
+                viewText: '查看',
+                
+                // 小貼士
+                tipsTitle: '小貼士：',
+                tips1: '所有連結將在新標籤頁打開，方便您比較和規劃。',
+                tips2: '出發地：{start} (緯度: {lat}, 經度: {lng})',
+                tips3: '部分服務可能需要您安裝相應的手機應用才能獲得最佳體驗。',
+                
+                // 錯誤信息
+                errorNoDestination: '請輸入目的地！',
+                errorPlanning: '發生錯誤：{error}，請檢查網絡連接後重試。',
+                errorLocationPermission: '位置權限被拒絕，請在瀏覽器設定中允許位置存取，或選擇熱門城市。',
+                errorLocationUnavailable: '位置資訊不可用，請檢查設備定位設定。',
+                errorLocationTimeout: '獲取位置超時，請檢查網絡並重試。'
             }
         };
         
-        // 社交平台配置
-        const socialPlatforms = [
-            { 
-                name: '抖音', 
-                icon: 'fab fa-tiktok', 
-                colorClass: 'douyin-color',
-                url: (keyword) => `https://www.douyin.com/search/${encodeURIComponent(keyword)}?type=video`,
-                description: '查看抖音上的熱門短視頻'
+        // 版本配置
+        const versionConfig = {
+            cn: {
+                defaultPosition: { lat: 39.9042, lng: 116.4074 },
+                defaultLocationName: "北京市中心",
+                
+                // 中国城市数据 - 中国内地、香港、澳门、台湾人最常去的10个城市市中心
+                cities: [
+                    { name: "上海人民广场", lat: 31.2304, lng: 121.4737 },
+                    { name: "北京天安门", lat: 39.9042, lng: 116.4074 },
+                    { name: "广州天河城", lat: 23.1350, lng: 113.3210 },
+                    { name: "深圳福田中心", lat: 22.5431, lng: 114.0555 },
+                    { name: "成都春熙路", lat: 30.6595, lng: 104.0800 },
+                    { name: "杭州湖滨银泰", lat: 30.2570, lng: 120.1650 },
+                    { name: "南京新街口", lat: 32.0417, lng: 118.7778 },
+                    { name: "香港尖沙咀", lat: 22.2980, lng: 114.1720 },
+                    { name: "澳门议事亭前地", lat: 22.1935, lng: 113.5383 },
+                    { name: "台北西门町", lat: 25.0424, lng: 121.5077 }
+                ],
+                
+                // 社交平台配置 - 中国热门平台
+                socialPlatforms: [
+                    { 
+                        name: '抖音', 
+                        icon: 'fab fa-tiktok', 
+                        colorClass: 'douyin-color',
+                        url: (keyword) => `https://www.douyin.com/search/${encodeURIComponent(keyword)}?type=video`,
+                        description: '查看抖音上的热门短视频'
+                    },
+                    { 
+                        name: '小红书', 
+                        icon: 'fas fa-book', 
+                        colorClass: 'xiaohongshu-color',
+                        url: (keyword) => `https://www.xiaohongshu.com/search_result?keyword=${encodeURIComponent(keyword)}`,
+                        description: '浏览小红书游记与攻略'
+                    },
+                    { 
+                        name: 'Bilibili', 
+                        icon: 'fas fa-play-circle', 
+                        colorClass: 'bilibili-color',
+                        url: (keyword) => `https://search.bilibili.com/all?keyword=${encodeURIComponent(keyword)}+旅游`,
+                        description: '查看B站旅游相关视频'
+                    },
+                    { 
+                        name: '微博', 
+                        icon: 'fab fa-weibo', 
+                        colorClass: 'weibo-color',
+                        url: (keyword) => `https://s.weibo.com/weibo/${encodeURIComponent(keyword)}`,
+                        description: '搜索微博相关话题'
+                    },
+                    { 
+                        name: '知乎', 
+                        icon: 'fab fa-zhihu', 
+                        colorClass: 'zhihu-color',
+                        url: (keyword) => `https://www.zhihu.com/search?type=content&q=${encodeURIComponent(keyword)}`,
+                        description: '查看知乎上的旅游问答'
+                    }
+                ],
+                
+                // 地图配置 - 使用百度地图和高德地图App
+                mapConfig: {
+                    getRouteUrl: (origin, destination, mode) => {
+                        // 百度地图App URL Scheme
+                        const baiduUrl = `baidumap://map/direction?origin=${origin.lat},${origin.lng}&destination=${encodeURIComponent(destination)}&mode=${mode}&src=webapp`;
+                        
+                        // 高德地图App URL Scheme
+                        const gaodeUrl = `amapuri://route/plan/?slat=${origin.lat}&slon=${origin.lng}&sname=起点&dlat=&dlon=&dname=${encodeURIComponent(destination)}&dev=0&t=0`;
+                        
+                        return { baiduUrl, gaodeUrl };
+                    },
+                    
+                    searchUrl: (query) => `https://www.baidu.com/s?wd=${encodeURIComponent(query)}`
+                },
+                
+                // 实用服务配置
+                services: {
+                    hotels: (destination) => `https://hotels.ctrip.com/hotels/list?keyword=${encodeURIComponent(destination)}`,
+                    food: (destination) => `https://www.dianping.com/search/keyword/1/0_${encodeURIComponent(destination)}`,
+                    taxi: () => `https://page.xiaojukeji.com/m/didi-index.html`,
+                    flights: (destination) => `https://flights.ctrip.com/online/channel/international?keyword=${encodeURIComponent(destination)}`
+                },
+                
+                // 热门目的地
+                popularDestinations: ['北京故宫', '上海外滩', '广州塔', '西安兵马俑', '成都宽窄巷子', '香港迪士尼', '澳门大三巴', '台北101', '杭州西湖', '南京夫子庙']
             },
-            { 
-                name: '小紅書', 
-                icon: 'fas fa-book', 
-                colorClass: 'xiaohongshu-color',
-                url: (keyword) => `https://www.xiaohongshu.com/search_result?keyword=${encodeURIComponent(keyword)}`,
-                description: '瀏覽小紅書遊記與攻略'
-            },
-            { 
-                name: 'Bili Bili', 
-                icon: 'fas fa-play-circle', 
-                colorClass: 'bilibili-color',
-                url: (keyword) => `https://search.bilibili.com/all?keyword=${encodeURIComponent(keyword)}`,
-                description: '查看B站旅遊相關影片'
-            },
-            { 
-                name: 'Facebook', 
-                icon: 'fab fa-facebook-f', 
-                colorClass: 'facebook-color',
-                url: (keyword) => `https://www.facebook.com/search/top/?q=${encodeURIComponent(keyword)}`,
-                description: '搜尋Facebook相關內容'
-            },
-            { 
-                name: 'Threads', 
-                icon: 'fas fa-comment', 
-                colorClass: 'threads-color',
-                url: (keyword) => `https://www.threads.net/search?q=${encodeURIComponent(keyword)}`,
-                description: '查看Threads相關討論'
-            },
-            { 
-                name: 'YouTube', 
-                icon: 'fab fa-youtube', 
-                colorClass: 'youtube-color',
-                url: (keyword) => `https://www.youtube.com/results?search_query=${encodeURIComponent(keyword)}+旅遊`,
-                description: '觀看YouTube旅遊影片'
-            },
-            { 
-                name: 'Instagram', 
-                icon: 'fab fa-instagram', 
-                colorClass: 'instagram-color',
-                url: (keyword) => `https://www.instagram.com/explore/tags/${encodeURIComponent(keyword)}/`,
-                description: '瀏覽Instagram打卡照片'
-            },
-            { 
-                name: 'Twitter', 
-                icon: 'fab fa-twitter', 
-                colorClass: 'twitter-color',
-                url: (keyword) => `https://twitter.com/search?q=${encodeURIComponent(keyword)}&src=typed_query`,
-                description: '查看Twitter最新動態'
+            
+            intl: {
+                defaultPosition: { lat: 22.1568, lng: 113.5610 },
+                defaultLocationName: "澳门氹仔中央公园",
+                
+                // 国际城市数据
+                cities: [
+                    { name: "澳门氹仔中央公园", lat: 22.1568, lng: 113.5610 },
+                    { name: "香港市中心", lat: 22.3193, lng: 114.1694 },
+                    { name: "东京市中心", lat: 35.6762, lng: 139.6503 },
+                    { name: "首尔市中心", lat: 37.5665, lng: 126.9780 },
+                    { name: "新加坡市中心", lat: 1.3521, lng: 103.8198 },
+                    { name: "曼谷市中心", lat: 13.7563, lng: 100.5018 },
+                    { name: "台北市中心", lat: 25.0330, lng: 121.5654 },
+                    { name: "悉尼市中心", lat: -33.8688, lng: 151.2093 },
+                    { name: "伦敦市中心", lat: 51.5074, lng: -0.1278 },
+                    { name: "纽约市中心", lat: 40.7128, lng: -74.0060 }
+                ],
+                
+                // 社交平台配置 - 国际热门平台
+                socialPlatforms: [
+                    { 
+                        name: 'Facebook', 
+                        icon: 'fab fa-facebook-f', 
+                        colorClass: 'facebook-color',
+                        url: (keyword) => `https://www.facebook.com/search/top/?q=${encodeURIComponent(keyword)}`,
+                        description: 'Search Facebook content'
+                    },
+                    { 
+                        name: 'Instagram', 
+                        icon: 'fab fa-instagram', 
+                        colorClass: 'instagram-color',
+                        url: (keyword) => `https://www.instagram.com/explore/tags/${encodeURIComponent(keyword.replace(/ /g, ''))}/`,
+                        description: 'Browse Instagram photos'
+                    },
+                    { 
+                        name: 'Twitter', 
+                        icon: 'fab fa-twitter', 
+                        colorClass: 'twitter-color',
+                        url: (keyword) => `https://twitter.com/search?q=${encodeURIComponent(keyword)}&src=typed_query`,
+                        description: 'View Twitter updates'
+                    },
+                    { 
+                        name: 'YouTube', 
+                        icon: 'fab fa-youtube', 
+                        colorClass: 'youtube-color',
+                        url: (keyword) => `https://www.youtube.com/results?search_query=${encodeURIComponent(keyword)}+travel`,
+                        description: 'Watch YouTube travel videos'
+                    },
+                    { 
+                        name: 'Tripadvisor', 
+                        icon: 'fas fa-suitcase-rolling', 
+                        colorClass: 'tripadvisor-color',
+                        url: (keyword) => `https://www.tripadvisor.com/Search?q=${encodeURIComponent(keyword)}`,
+                        description: 'View travel reviews'
+                    }
+                ],
+                
+                // 地图配置 - Google Maps
+                mapConfig: {
+                    getRouteUrl: (origin, destination, mode) => {
+                        // Google Maps路线规划
+                        return `https://www.google.com/maps/dir/?api=1&origin=${origin.lat},${origin.lng}&destination=${encodeURIComponent(destination)}&travelmode=${mode}`;
+                    },
+                    
+                    searchUrl: (query) => `https://www.google.com/search?q=${encodeURIComponent(query)}`
+                },
+                
+                // 实用服务配置
+                services: {
+                    hotels: (destination) => `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(destination)}`,
+                    food: (destination) => `https://www.google.com/search?q=${encodeURIComponent(destination)}+restaurants`,
+                    taxi: () => `https://www.uber.com/`,
+                    flights: (destination) => `https://www.skyscanner.com/transport/flights/${encodeURIComponent(destination)}`
+                },
+                
+                // 热门目的地
+                popularDestinations: ['Tokyo Skytree', 'Hong Kong Disneyland', 'Singapore Gardens by the Bay', 'Bangkok Grand Palace', 'Taipei 101', 'Sydney Opera House', 'London Eye', 'New York Times Square', 'Paris Eiffel Tower', 'Seoul Myeongdong']
             }
-        ];
+        };
         
-        // 獲取用戶位置
+        // 获取当前版本配置
+        function getCurrentConfig() {
+            return versionConfig[currentVersion];
+        }
+        
+        // 获取当前语言文本
+        function getText(key, params = {}) {
+            const text = languageTexts[currentLanguage][key] || key;
+            
+            // 替换参数
+            let result = text;
+            for (const param in params) {
+                result = result.replace(new RegExp(`{${param}}`, 'g'), params[param]);
+            }
+            
+            return result;
+        }
+        
+        // 切换版本
+        function switchVersion(version) {
+            currentVersion = version;
+            
+            // 更新按钮状态
+            document.getElementById('cn-version-btn').classList.toggle('active', version === 'cn');
+            document.getElementById('intl-version-btn').classList.toggle('active', version === 'intl');
+            
+            // 自动切换语言：中国版用简体，国际版用繁体
+            if (version === 'cn') {
+                switchLanguage('zh-CN');
+            } else {
+                switchLanguage('zh-TW');
+            }
+            
+            // 更新页面文本
+            updatePageText();
+            
+            // 更新城市选择下拉菜单
+            updateCitySelect();
+            
+            // 更新热门目的地按钮
+            updatePopularDestinations();
+            
+            // 重置位置为默认位置
+            resetToDefaultLocation();
+        }
+        
+        // 切换语言
+        function switchLanguage(lang) {
+            currentLanguage = lang;
+            
+            // 更新语言按钮状态
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            const activeBtn = Array.from(document.querySelectorAll('.lang-btn')).find(btn => {
+                return (lang === 'zh-CN' && btn.textContent === '简体') ||
+                       (lang === 'zh-TW' && btn.textContent === '繁體');
+            });
+            if (activeBtn) activeBtn.classList.add('active');
+            
+            // 更新页面文本
+            updatePageText();
+            
+            // 更新热门目的地按钮
+            updatePopularDestinations();
+        }
+        
+        // 更新页面文本
+        function updatePageText() {
+            // 更新标题
+            document.title = getText('title');
+            document.getElementById('main-title').innerHTML = `<i class="fas fa-plane-departure"></i> ${getText('title')}`;
+            document.getElementById('version-subtitle').textContent = getText('subtitle');
+            document.getElementById('version-note').textContent = getText('note');
+            
+            // 更新功能描述
+            document.getElementById('feature-location').textContent = getText('featureLocation');
+            document.getElementById('feature-location-desc').textContent = getText('featureLocationDesc');
+            document.getElementById('feature-routes').textContent = getText('featureRoutes');
+            document.getElementById('feature-routes-desc').textContent = getText('featureRoutesDesc');
+            document.getElementById('feature-recommend').textContent = getText('featureRecommend');
+            document.getElementById('feature-recommend-desc').textContent = getText('featureRecommendDesc');
+            document.getElementById('feature-social').textContent = getText('featureSocial');
+            document.getElementById('feature-social-desc').textContent = getText('featureSocialDesc');
+            
+            // 更新位置选择
+            document.getElementById('location-select-title').textContent = getText('locationSelectTitle');
+            document.getElementById('location-select-desc').textContent = getText('locationSelectDesc');
+            document.getElementById('location-current-label').textContent = getText('locationCurrentLabel');
+            document.getElementById('location-select-label').textContent = getText('locationSelectLabel');
+            document.getElementById('city-locations-label').textContent = getText('cityLocationsLabel');
+            document.getElementById('update-location-text').textContent = getText('updateLocationText');
+            document.getElementById('reset-location-text').textContent = getText('resetLocationText');
+            
+            // 更新位置状态
+            document.getElementById('location-status-title').textContent = getText('locationStatusTitle');
+            document.getElementById('location-detail-start').textContent = getText('locationDetailStart');
+            document.getElementById('location-detail-coords').textContent = getText('locationDetailCoords');
+            
+            // 更新目的地输入
+            document.getElementById('destination').placeholder = getText('destinationPlaceholder');
+            document.getElementById('plan-trip-text').textContent = getText('planTripText');
+            
+            // 更新热门目的地
+            document.getElementById('popular-dest-label').textContent = getText('popularDestLabel');
+        }
+        
+        // 更新城市选择下拉菜单
+        function updateCitySelect() {
+            const config = getCurrentConfig();
+            const citySelect = document.getElementById('city-locations');
+            citySelect.innerHTML = '';
+            
+            config.cities.forEach(city => {
+                const option = document.createElement('option');
+                option.value = `${city.lat},${city.lng},${city.name}`;
+                option.textContent = city.name;
+                citySelect.appendChild(option);
+            });
+        }
+        
+        // 更新热门目的地按钮
+        function updatePopularDestinations() {
+            const popularDestContainer = document.querySelector('.popular-destinations');
+            // 清除现有按钮（保留标签）
+            const label = popularDestContainer.querySelector('#popular-dest-label');
+            popularDestContainer.innerHTML = '';
+            popularDestContainer.appendChild(label);
+            
+            // 根据版本获取热门目的地
+            const config = getCurrentConfig();
+            const popularDests = config.popularDestinations || [];
+            
+            popularDests.forEach(destination => {
+                const btn = document.createElement('button');
+                btn.className = 'popular-btn';
+                btn.textContent = destination;
+                btn.onclick = () => setDestination(destination);
+                popularDestContainer.appendChild(btn);
+            });
+        }
+        
+        // 获取用户位置
         function getUserLocation() {
             return new Promise((resolve, reject) => {
+                const config = getCurrentConfig();
+                
                 if (navigator.geolocation) {
+                    // 先显示获取位置状态
+                    updateLocationStatus("info", `<i class="fas fa-sync fa-spin"></i> ${getText('locationStatusText')}`);
+                    
                     navigator.geolocation.getCurrentPosition(
                         (position) => {
                             userPosition = {
                                 lat: position.coords.latitude.toFixed(6),
                                 lng: position.coords.longitude.toFixed(6)
                             };
-                            const status = document.getElementById('location-status');
-                            status.innerHTML = `<i class="fas fa-check-circle"></i> 位置已獲取：緯度 ${userPosition.lat}, 經度 ${userPosition.lng}`;
-                            status.className = 'location-status success';
+                            
+                            // 更新位置状态显示
+                            updateLocationStatus("success", `<i class="fas fa-check-circle"></i> 已获取您的位置：纬度 ${userPosition.lat}, 经度 ${userPosition.lng}`);
+                            
+                            // 更新位置详情显示
+                            updateLocationDetails("您的位置", userPosition.lat, userPosition.lng);
+                            
+                            // 自动选中"使用我的当前位置"选项
+                            document.getElementById('location-current').checked = true;
+                            document.getElementById('custom-location-selector').style.display = 'none';
+                            document.getElementById('current-location-option').classList.add('active');
+                            document.getElementById('select-location-option').classList.remove('active');
+                            
                             resolve(userPosition);
                         },
                         (error) => {
-                            const status = document.getElementById('location-status');
-                            let message = `獲取位置超時，使用默認位置：${DEFAULT_LOCATION_NAME}。`;
+                            console.log('位置获取失败:', error);
+                            let message = '';
                             switch(error.code) {
                                 case error.PERMISSION_DENIED:
-                                    message = `位置服務被拒絕，使用默認位置：${DEFAULT_LOCATION_NAME}。`;
+                                    message = getText('errorLocationPermission');
                                     break;
                                 case error.POSITION_UNAVAILABLE:
-                                    message = `位置信息不可用，使用默認位置：${DEFAULT_LOCATION_NAME}。`;
+                                    message = getText('errorLocationUnavailable');
                                     break;
                                 case error.TIMEOUT:
-                                    message = `獲取位置超時，使用默認位置：${DEFAULT_LOCATION_NAME}。`;
+                                    message = getText('errorLocationTimeout');
                                     break;
+                                default:
+                                    message = `获取位置失败，使用默认位置：${config.defaultLocationName}。`;
                             }
-                            userPosition = DEFAULT_POSITION;
-                            status.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${message}`;
-                            status.className = 'location-status warning';
+                            
+                            // 使用默认位置
+                            userPosition = config.defaultPosition;
+                            updateLocationStatus("warning", `<i class="fas fa-exclamation-triangle"></i> ${message}`);
+                            updateLocationDetails(config.defaultLocationName, userPosition.lat, userPosition.lng);
+                            
+                            // 自动切换到选择地点模式
+                            document.getElementById('location-select').checked = true;
+                            document.getElementById('custom-location-selector').style.display = 'block';
+                            document.getElementById('current-location-option').classList.remove('active');
+                            document.getElementById('select-location-option').classList.add('active');
+                            
                             resolve(userPosition);
                         },
-                        { timeout: 5000, enableHighAccuracy: true } // 設置5秒超時
+                        { 
+                            timeout: 10000,
+                            enableHighAccuracy: true,
+                            maximumAge: 0
+                        }
                     );
                 } else {
-                    userPosition = DEFAULT_POSITION;
-                    document.getElementById('location-status').innerHTML = 
-                        `<i class="fas fa-map-marker-alt"></i> 瀏覽器不支持位置服務，使用默認位置：${DEFAULT_LOCATION_NAME}。`;
-                    document.getElementById('location-status').className = 'location-status warning';
+                    userPosition = config.defaultPosition;
+                    updateLocationStatus("warning", `<i class="fas fa-exclamation-triangle"></i> 浏览器不支持定位服务，使用默认位置：${config.defaultLocationName}。`);
+                    updateLocationDetails(config.defaultLocationName, userPosition.lat, userPosition.lng);
+                    
+                    // 自动切换到选择地点模式
+                    document.getElementById('location-select').checked = true;
+                    document.getElementById('custom-location-selector').style.display = 'block';
+                    document.getElementById('current-location-option').classList.remove('active');
+                    document.getElementById('select-location-option').classList.add('active');
+                    
                     resolve(userPosition);
                 }
             });
         }
         
+        // 更新位置状态显示
+        function updateLocationStatus(type, message) {
+            const status = document.getElementById('location-status');
+            status.innerHTML = message;
+            status.className = `location-status ${type}`;
+        }
+        
+        // 更新位置详情显示
+        function updateLocationDetails(name, lat, lng) {
+            document.getElementById('current-location-name').textContent = name;
+            document.getElementById('current-coordinates').textContent = `纬度 ${lat}, 经度 ${lng}`;
+        }
+        
+        // 设置目的地
         function setDestination(dest) {
             document.getElementById('destination').value = dest;
             planTrip();
         }
         
+        // 处理按键事件
         function handleKeyPress(event) {
             if (event.key === 'Enter') planTrip();
         }
         
-        // 生成本地推薦內容（無需API）
-        function generateLocalRecommendations(destination) {
-            let recommendations = {
-                attractions: [],
-                shopping: [],
-                food: [],
-                accommodation: []
+        // 更新位置（根据用户选择）
+        function updateLocation() {
+            const useCurrentLocation = document.getElementById('location-current').checked;
+            
+            if (useCurrentLocation) {
+                // 使用当前位置
+                updateLocationStatus("info", `<i class="fas fa-sync fa-spin"></i> ${getText('locationStatusText')}`);
+                getUserLocation();
+            } else {
+                // 使用选择的城市地点
+                const selectElement = document.getElementById('city-locations');
+                const selectedValue = selectElement.value;
+                const [lat, lng, name] = selectedValue.split(',');
+                
+                userPosition = { lat: parseFloat(lat), lng: parseFloat(lng) };
+                
+                updateLocationStatus("success", `<i class="fas fa-check-circle"></i> 已选择出发地：${name}`);
+                updateLocationDetails(name, userPosition.lat, userPosition.lng);
+            }
+        }
+        
+        // 重置为默认位置
+        function resetToDefaultLocation() {
+            const config = getCurrentConfig();
+            userPosition = config.defaultPosition;
+            updateLocationStatus("info", `<i class="fas fa-info-circle"></i> 已重置为默认位置：${config.defaultLocationName}`);
+            updateLocationDetails(config.defaultLocationName, userPosition.lat, userPosition.lng);
+            
+            // 重置选择
+            document.getElementById('location-current').checked = true;
+            document.getElementById('custom-location-selector').style.display = 'none';
+            document.getElementById('current-location-option').classList.add('active');
+            document.getElementById('select-location-option').classList.remove('active');
+        }
+        
+        // 创建推荐项目HTML
+        function createRecommendationHTML(category, destination) {
+            const config = getCurrentConfig();
+            const searchQueries = {
+                attractions: currentVersion === 'cn' ? `${destination} 景点推荐` : `${destination} attractions`,
+                shopping: currentVersion === 'cn' ? `${destination} 购物推荐` : `${destination} shopping places`,
+                food: currentVersion === 'cn' ? `${destination} 美食推荐` : `${destination} restaurants`,
+                accommodation: currentVersion === 'cn' ? `${destination} 住宿推荐` : `${destination} hotels`
             };
             
-            // 檢查是否匹配已知的熱門目的地
-            for (const city in popularDestinations) {
-                if (destination.includes(city)) {
-                    recommendations = JSON.parse(JSON.stringify(popularDestinations[city]));
-                    break;
-                }
-            }
-            
-            // 如果沒有匹配的預設數據，則生成通用推薦
-            if (recommendations.attractions.length === 0) {
-                recommendations = {
-                    attractions: [
-                        `${destination}主要景點`,
-                        `${destination}歷史古蹟`,
-                        `${destination}自然風光`,
-                        `${destination}文化體驗`,
-                        `${destination}觀景台`,
-                        `${destination}博物館`,
-                        `${destination}主題樂園`,
-                        `${destination}老街區`,
-                        `${destination}宗教場所`,
-                        `${destination}公園廣場`
-                    ],
-                    shopping: [
-                        `${destination}購物中心`,
-                        `${destination}傳統市場`,
-                        `${destination}特色商店`,
-                        `${destination}免稅店`,
-                        `${destination}紀念品店`,
-                        `${destination}百貨公司`,
-                        `${destination}夜市`,
-                        `${destination}Outlet`,
-                        `${destination}精品店`,
-                        `${destination}手工藝品店`
-                    ],
-                    food: [
-                        `${destination}特色餐廳`,
-                        `${destination}地道小吃`,
-                        `${destination}咖啡廳`,
-                        `${destination}夜市美食`,
-                        `${destination}海鮮餐廳`,
-                        `${destination}米其林餐廳`,
-                        `${destination}素食餐廳`,
-                        `${destination}早餐店`,
-                        `${destination}甜品店`,
-                        `${destination}酒吧`
-                    ],
-                    accommodation: [
-                        `${destination}五星酒店`,
-                        `${destination}精品旅館`,
-                        `${destination}民宿`,
-                        `${destination}商務酒店`,
-                        `${destination}青年旅舍`,
-                        `${destination}度假村`,
-                        `${destination}服務式公寓`,
-                        `${destination}溫泉旅館`,
-                        `${destination}設計酒店`,
-                        `${destination}海景酒店`
-                    ]
-                };
-            }
-            
-            return recommendations;
-        }
-        
-        // 創建推薦項目HTML
-        function createRecommendationHTML(items, category, destination) {
-            return items.map(item => `
+            const query = searchQueries[category];
+            return `
                 <div class="recommendation-item">
-                    <span>${item}</span>
-                    <a href="https://www.google.com/search?q=${encodeURIComponent(item)}" target="_blank" rel="noopener noreferrer">
-                        搜尋
+                    <span>${getText(category + 'Desc')}</span>
+                    <a href="${config.mapConfig.searchUrl(query)}" target="_blank" rel="noopener noreferrer">
+                        ${getText('moreInfoText')}
                     </a>
                 </div>
-            `).join('');
+            `;
         }
         
-        // 創建社交平台HTML
+        // 创建社交平台HTML
         function createSocialPlatformsHTML(destination) {
-            return socialPlatforms.map(platform => `
+            const config = getCurrentConfig();
+            return config.socialPlatforms.map(platform => `
                 <div class="social-item">
                     <div class="social-name">
                         <div class="social-icon">
@@ -593,178 +1340,296 @@
                         </div>
                     </div>
                     <a href="${platform.url(destination)}" target="_blank" rel="noopener noreferrer" class="${platform.colorClass}" style="color: white;">
-                        查看
+                        ${getText('viewText')}
                     </a>
                 </div>
             `).join('');
         }
         
-        // 規劃行程主函數
+        // 创建路线规划HTML
+        function createRouteHTML(startLocationName, destination) {
+            const config = getCurrentConfig();
+            const modes = [
+                { name: getText('modesDriving'), icon: 'fa-car', mode: 'driving' },
+                { name: getText('modesWalking'), icon: 'fa-walking', mode: 'walking' },
+                { name: getText('modesTransit'), icon: 'fa-bus', mode: 'transit' },
+                { name: getText('modesFlying'), icon: 'fa-plane', mode: 'flying' }
+            ];
+            
+            let mapButtonsHTML = '';
+            
+            if (currentVersion === 'cn') {
+                // 中国版显示百度地图和高德地图按钮
+                mapButtonsHTML = `
+                    <div class="map-buttons">
+                        <button class="map-app-btn baidu-map-btn" onclick="openBaiduMap('${destination}')">
+                            <i class="fas fa-map"></i> 百度地图
+                        </button>
+                        <button class="map-app-btn gaode-map-btn" onclick="openGaodeMap('${destination}')">
+                            <i class="fas fa-map-marked-alt"></i> 高德地图
+                        </button>
+                    </div>
+                    <div class="mode-selector">
+                        ${modes.map(mode => `
+                            <button class="mode-btn" onclick="openMapWithMode('${destination}', '${mode.mode}')">
+                                <i class="fas ${mode.icon}"></i> ${mode.name}
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                // 国际版显示Google地图按钮
+                mapButtonsHTML = `
+                    <div class="map-buttons">
+                        <button class="map-app-btn google-map-btn" onclick="openGoogleMap('${destination}')">
+                            <i class="fab fa-google"></i> Google地图
+                        </button>
+                    </div>
+                    <div class="mode-selector">
+                        ${modes.map(mode => `
+                            <button class="mode-btn" onclick="openGoogleMapWithMode('${destination}', '${mode.mode}')">
+                                <i class="fas ${mode.icon}"></i> ${mode.name}
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            return `
+                <p style="margin-bottom: 15px;">${getText('mapInstruction')}</p>
+                ${mapButtonsHTML}
+                <div class="map-instruction" style="margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                    <i class="fas fa-info-circle"></i> ${getText('mapAdditionalInstruction')}
+                </div>
+            `;
+        }
+        
+        // 打开百度地图
+        function openBaiduMap(destination) {
+            const config = getCurrentConfig();
+            const baiduUrl = `baidumap://map/direction?origin=${userPosition.lat},${userPosition.lng}&destination=${encodeURIComponent(destination)}&mode=driving&src=webapp`;
+            const webUrl = `https://map.baidu.com/dir/?origin=${userPosition.lat},${userPosition.lng}&destination=${encodeURIComponent(destination)}&mode=driving`;
+            
+            // 尝试打开App，如果失败则打开网页版
+            window.location.href = baiduUrl;
+            setTimeout(() => {
+                window.open(webUrl, '_blank');
+            }, 500);
+        }
+        
+        // 打开高德地图
+        function openGaodeMap(destination) {
+            const gaodeUrl = `amapuri://route/plan/?slat=${userPosition.lat}&slon=${userPosition.lng}&sname=起点&dlat=&dlon=&dname=${encodeURIComponent(destination)}&dev=0&t=0`;
+            const webUrl = `https://uri.amap.com/navigation?from=${userPosition.lng},${userPosition.lat}&to=${encodeURIComponent(destination)}&mode=car`;
+            
+            // 尝试打开App，如果失败则打开网页版
+            window.location.href = gaodeUrl;
+            setTimeout(() => {
+                window.open(webUrl, '_blank');
+            }, 500);
+        }
+        
+        // 打开Google地图
+        function openGoogleMap(destination) {
+            const url = `https://www.google.com/maps/dir/?api=1&origin=${userPosition.lat},${userPosition.lng}&destination=${encodeURIComponent(destination)}&travelmode=driving`;
+            window.open(url, '_blank');
+        }
+        
+        // 打开Google地图（带模式）
+        function openGoogleMapWithMode(destination, mode) {
+            const url = `https://www.google.com/maps/dir/?api=1&origin=${userPosition.lat},${userPosition.lng}&destination=${encodeURIComponent(destination)}&travelmode=${mode}`;
+            window.open(url, '_blank');
+        }
+        
+        // 打开地图（带模式）- 中国版
+        function openMapWithMode(destination, mode) {
+            const baiduUrl = `baidumap://map/direction?origin=${userPosition.lat},${userPosition.lng}&destination=${encodeURIComponent(destination)}&mode=${mode}&src=webapp`;
+            const webUrl = `https://map.baidu.com/dir/?origin=${userPosition.lat},${userPosition.lng}&destination=${encodeURIComponent(destination)}&mode=${mode}`;
+            
+            // 尝试打开App，如果失败则打开网页版
+            window.location.href = baiduUrl;
+            setTimeout(() => {
+                window.open(webUrl, '_blank');
+            }, 500);
+        }
+        
+        // 规划行程主函数
         async function planTrip() {
             const destination = document.getElementById('destination').value.trim();
             const planBtn = document.getElementById('plan-btn');
             
             if (!destination) {
-                alert('請輸入目的地！');
+                alert(getText('errorNoDestination'));
                 return;
             }
             
-            // 禁用按鈕防止重複點擊
+            // 禁用按钮防止重复点击
             planBtn.disabled = true;
-            planBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 規劃中...';
+            planBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${getText('planTripText')}`;
             
             try {
                 const resultsDiv = document.getElementById('results');
-                resultsDiv.innerHTML = '<div class="loading">正在規劃您的行程...</div>';
+                resultsDiv.innerHTML = `<div class="loading">${getText('loadingText')}</div>`;
                 
-                // 確保有位置信息
+                // 确保有位置信息
                 if (!userPosition) {
                     await getUserLocation();
                 }
                 
-                const origin = `${userPosition.lat},${userPosition.lng}`;
-                const encodedDestination = encodeURIComponent(destination);
+                const config = getCurrentConfig();
                 
-                // 生成路線規劃連結
-                const links = {
-                    routes: {
-                        transit: `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${encodedDestination}&travelmode=transit&dir_action=navigate`,
-                        walking: `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${encodedDestination}&travelmode=walking&dir_action=navigate`,
-                        driving: `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${encodedDestination}&travelmode=driving&dir_action=navigate`
-                    },
-                    booking: {
-                        hotels: `https://www.booking.com/searchresults.html?ss=${encodedDestination}`,
-                        flights: `https://www.skyscanner.com.hk/transport/flights/${encodedDestination}`,
-                        activities: `https://www.klook.com/zh-HK/search/?query=${encodedDestination}`
-                    }
-                };
-                
-                // 生成本地推薦
-                const localRecommendations = generateLocalRecommendations(destination);
-                
-                // 顯示結果
+                // 显示结果
                 resultsDiv.innerHTML = '';
                 
-                // 路線規劃部分
+                // 获取出发地名称
+                const startLocationName = document.getElementById('current-location-name').textContent;
+                
+                // 路线规划部分
                 const routesSection = document.createElement('div');
                 routesSection.className = 'section section-routes';
-                const startLocation = userPosition === DEFAULT_POSITION ? DEFAULT_LOCATION_NAME : "您的位置";
                 routesSection.innerHTML = `
-                    <h2><i class="fas fa-route"></i> 路線規劃</h2>
-                    <p>從 <strong>${startLocation}</strong> 前往 <strong>${destination}</strong> 的路線：</p>
-                    <div class="recommendations-grid">
-                        <div class="recommendation-item">
-                            <span><i class="fas fa-bus"></i> 公共交通路線</span>
-                            <a href="${links.routes.transit}" target="_blank" rel="noopener noreferrer">查看路線</a>
-                        </div>
-                        <div class="recommendation-item">
-                            <span><i class="fas fa-walking"></i> 步行路線</span>
-                            <a href="${links.routes.walking}" target="_blank" rel="noopener noreferrer">查看路線</a>
-                        </div>
-                        <div class="recommendation-item">
-                            <span><i class="fas fa-car"></i> 自駕路線</span>
-                            <a href="${links.routes.driving}" target="_blank" rel="noopener noreferrer">查看路線</a>
-                        </div>
-                    </div>
+                    <h2><i class="fas fa-route"></i> ${getText('routesTitle')}</h2>
+                    <p>${getText('routesDesc', {start: startLocationName, dest: destination})}</p>
+                    ${createRouteHTML(startLocationName, destination)}
                 `;
                 resultsDiv.appendChild(routesSection);
                 
-                // 本地推薦部分
+                // 本地推荐部分
                 const recommendationsSection = document.createElement('div');
                 recommendationsSection.className = 'section section-rankings';
                 recommendationsSection.innerHTML = `
-                    <h2><i class="fas fa-star"></i> 本地推薦</h2>
-                    <p>為您推薦 <strong>${destination}</strong> 的熱門地點：</p>
+                    <h2><i class="fas fa-star"></i> ${getText('recommendationsTitle')}</h2>
+                    <p>${getText('recommendationsDesc', {dest: destination})}</p>
                     
-                    <h3><span class="category-tag tag-attractions">景點</span> 推薦景點</h3>
+                    <h3><span class="category-tag tag-attractions">${getText('attractionsTitle')}</span> ${getText('attractionsDesc')}</h3>
                     <div class="recommendations-grid">
-                        ${createRecommendationHTML(localRecommendations.attractions, 'attractions', destination)}
+                        ${createRecommendationHTML('attractions', destination)}
                     </div>
                     
-                    <h3><span class="category-tag tag-shopping">購物</span> 推薦購物地點</h3>
+                    <h3><span class="category-tag tag-shopping">${getText('shoppingTitle')}</span> ${getText('shoppingDesc')}</h3>
                     <div class="recommendations-grid">
-                        ${createRecommendationHTML(localRecommendations.shopping, 'shopping', destination)}
+                        ${createRecommendationHTML('shopping', destination)}
                     </div>
                     
-                    <h3><span class="category-tag tag-food">美食</span> 推薦餐廳與美食</h3>
+                    <h3><span class="category-tag tag-food">${getText('foodTitle')}</span> ${getText('foodDesc')}</h3>
                     <div class="recommendations-grid">
-                        ${createRecommendationHTML(localRecommendations.food, 'food', destination)}
+                        ${createRecommendationHTML('food', destination)}
                     </div>
                     
-                    <h3><span class="category-tag tag-accommodation">住宿</span> 推薦住宿</h3>
+                    <h3><span class="category-tag tag-accommodation">${getText('accommodationTitle')}</span> ${getText('accommodationDesc')}</h3>
                     <div class="recommendations-grid">
-                        ${createRecommendationHTML(localRecommendations.accommodation, 'accommodation', destination)}
+                        ${createRecommendationHTML('accommodation', destination)}
                     </div>
                 `;
                 resultsDiv.appendChild(recommendationsSection);
                 
-                // 社群熱點部分
+                // 社交热点部分
                 const socialSection = document.createElement('div');
                 socialSection.className = 'section section-social';
                 socialSection.innerHTML = `
-                    <h2><i class="fas fa-hashtag"></i> 社群熱點</h2>
-                    <p>查看社交媒體上關於 <strong>${destination}</strong> 的熱門內容：</p>
+                    <h2><i class="fas fa-hashtag"></i> ${getText('socialTitle')}</h2>
+                    <p>${getText('socialDesc', {dest: destination})}</p>
                     <div class="social-grid">
                         ${createSocialPlatformsHTML(destination)}
                     </div>
                 `;
                 resultsDiv.appendChild(socialSection);
                 
-                // 預訂與更多資訊部分
-                const bookingSection = document.createElement('div');
-                bookingSection.className = 'section section-booking';
-                bookingSection.innerHTML = `
-                    <h2><i class="fas fa-hotel"></i> 預訂與更多資訊</h2>
-                    <p>為您的 <strong>${destination}</strong> 之旅做好準備：</p>
+                // 实用工具部分
+                const toolsSection = document.createElement('div');
+                toolsSection.className = 'section section-tools';
+                toolsSection.innerHTML = `
+                    <h2><i class="fas fa-tools"></i> ${getText('toolsTitle')}</h2>
+                    <p>${getText('toolsDesc', {dest: destination})}</p>
                     <div class="recommendations-grid">
                         <div class="recommendation-item">
-                            <span><i class="fas fa-bed"></i> 預訂酒店</span>
-                            <a href="${links.booking.hotels}" target="_blank" rel="noopener noreferrer">查看選項</a>
+                            <span><i class="fas fa-bed"></i> ${getText('hotelsText')}</span>
+                            <a href="${config.services.hotels(destination)}" target="_blank" rel="noopener noreferrer">
+                                ${currentVersion === 'cn' ? '携程' : 'Booking'}
+                            </a>
                         </div>
                         <div class="recommendation-item">
-                            <span><i class="fas fa-plane"></i> 查詢航班</span>
-                            <a href="${links.booking.flights}" target="_blank" rel="noopener noreferrer">搜尋航班</a>
+                            <span><i class="fas fa-utensils"></i> ${getText('foodSearchText')}</span>
+                            <a href="${config.services.food(destination)}" target="_blank" rel="noopener noreferrer">
+                                ${currentVersion === 'cn' ? '大众点评' : 'Food Search'}
+                            </a>
                         </div>
                         <div class="recommendation-item">
-                            <span><i class="fas fa-ticket-alt"></i> 預訂活動與門票</span>
-                            <a href="${links.booking.activities}" target="_blank" rel="noopener noreferrer">查看活動</a>
+                            <span><i class="fas fa-taxi"></i> ${getText('taxiText')}</span>
+                            <a href="${config.services.taxi()}" target="_blank" rel="noopener noreferrer">
+                                ${currentVersion === 'cn' ? '滴滴' : 'Uber'}
+                            </a>
                         </div>
                         <div class="recommendation-item">
-                            <span><i class="fas fa-utensils"></i> 餐廳預訂</span>
-                            <a href="https://www.google.com/search?q=${encodedDestination}+餐廳預訂" target="_blank" rel="noopener noreferrer">搜尋餐廳</a>
+                            <span><i class="fas fa-info-circle"></i> ${getText('moreInfoText')}</span>
+                            <a href="${config.mapConfig.searchUrl(destination + ' ' + (currentVersion === 'cn' ? '旅游攻略' : 'travel guide'))}" target="_blank" rel="noopener noreferrer">
+                                ${getText('moreInfoText')}
+                            </a>
                         </div>
                     </div>
                     <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                        <p><strong><i class="fas fa-lightbulb"></i> 小貼士：</strong> 所有連結將在新標籤頁打開，方便您比較和規劃。</p>
-                        <p><strong><i class="fas fa-map-marker-alt"></i> 出發地：</strong> ${startLocation} (緯度: ${userPosition.lat}, 經度: ${userPosition.lng})</p>
+                        <p><strong><i class="fas fa-lightbulb"></i> ${getText('tipsTitle')}</strong> ${getText('tips1')}</p>
+                        <p><strong><i class="fas fa-map-marker-alt"></i> ${getText('tips2', {start: startLocationName, lat: userPosition.lat, lng: userPosition.lng})}</p>
+                        <p><strong><i class="fas fa-info-circle"></i> ${getText('tips3')}</p>
                     </div>
                 `;
-                resultsDiv.appendChild(bookingSection);
+                resultsDiv.appendChild(toolsSection);
                 
-                // 滾動到結果區域
-                resultsDiv.scrollIntoView({ behavior: 'smooth' });
+                // 滚动到结果区域
+                resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 
             } catch (error) {
-                console.error('行程規劃錯誤:', error);
+                console.error('行程规划错误:', error);
                 document.getElementById('results').innerHTML = `
                     <div class="location-status error">
-                        <i class="fas fa-exclamation-circle"></i> <strong>發生錯誤：</strong> ${error.message}<br>
-                        請檢查網絡連接後重試。
+                        <i class="fas fa-exclamation-circle"></i> <strong>${getText('errorPlanning', {error: error.message})}</strong>
                     </div>
                 `;
             } finally {
-                // 重新啟用按鈕
+                // 重新启用按钮
                 planBtn.disabled = false;
-                planBtn.innerHTML = '<i class="fas fa-search"></i> 規劃行程';
+                planBtn.innerHTML = `<i class="fas fa-search"></i> ${getText('planTripText')}`;
             }
         }
         
-        // 頁面載入時獲取位置
+        // 页面加载时初始化
         window.addEventListener('DOMContentLoaded', async () => {
             try {
+                // 设置位置选择的事件监听器
+                document.getElementById('location-current').addEventListener('change', function() {
+                    if (this.checked) {
+                        document.getElementById('custom-location-selector').style.display = 'none';
+                        document.getElementById('current-location-option').classList.add('active');
+                        document.getElementById('select-location-option').classList.remove('active');
+                        updateLocation();
+                    }
+                });
+                
+                document.getElementById('location-select').addEventListener('change', function() {
+                    if (this.checked) {
+                        document.getElementById('custom-location-selector').style.display = 'block';
+                        document.getElementById('current-location-option').classList.remove('active');
+                        document.getElementById('select-location-option').classList.add('active');
+                        updateLocation();
+                    }
+                });
+                
+                // 城市地点选择变更事件
+                document.getElementById('city-locations').addEventListener('change', function() {
+                    updateLocation();
+                });
+                
+                // 初始获取位置
                 await getUserLocation();
+                
+                // 初始化版本切换
+                switchVersion('cn');
+                
+                // 更新页面文本
+                updatePageText();
+                
             } catch (error) {
-                console.error('初始化錯誤:', error);
+                console.error('初始化错误:', error);
             }
         });
     </script>
